@@ -1,0 +1,50 @@
+# nanyang-Helios1.2 早期版本 (tiny) —— 从零搭建的图文/视频联合扩散模型
+# 图片视为单帧视频，与视频统一由同一个 DiT 处理
+model_name: nanyang-Helios1.2
+seed: 42
+
+vae:
+  in_channels: 3
+  latent_channels: 4
+  base_channels: 64
+latent_scale: 1.0
+
+text:
+  dim: 256
+  depth: 4
+  heads: 4
+  max_len: 128
+
+dit:
+  in_channels: 4        # 与 vae.latent_channels 一致
+  dim: 384
+  depth: 8
+  heads: 6
+  patch_size: 2
+  max_t: 16             # 最大帧数（时间维不打 patch）
+  max_h: 16             # latent patch 网格上限: 像素尺寸 / 8 / patch_size
+  max_w: 16
+
+train:
+  image_size: 64
+  num_frames: 8
+  batch_size: 8
+  lr: 2.0e-4
+  weight_decay: 0.01
+  steps: 10000
+  warmup_steps: 500
+  grad_clip: 1.0
+  caption_dropout: 0.1  # 训练 CFG 用的无条件 dropout
+  p_video: 0.5          # 每个 step 取视频 batch 的概率（有视频数据时）
+  kl_weight: 1.0e-6
+  num_workers: 0
+  log_every: 50
+  save_every: 1000
+  out_dir: runs/helios_tiny
+  image_data: data/images   # 图片目录，同名 .txt 为 caption（可选）
+  video_data: data/videos   # 视频目录，同名 .txt 为 caption（可选）
+
+sample:
+  steps: 30
+  cfg_scale: 4.0
+  fps: 8
