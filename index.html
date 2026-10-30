@@ -55,6 +55,13 @@
   .arch text { font-family: var(--mono); fill: var(--text); font-size: 13px; }
   .arch .lbl { fill: var(--dim); font-size: 11px; }
 
+  .sponsor-card { display: flex; gap: 28px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 28px; flex-wrap: wrap; }
+  .sponsor-card img { width: 240px; border-radius: 12px; border: 1px solid var(--line); display: block; transition: transform .15s; }
+  .sponsor-card a:hover img { transform: scale(1.02); }
+  .sponsor-card .txt { flex: 1; min-width: 260px; }
+  .sponsor-card .txt h3 { font-size: 18px; margin-bottom: 8px; color: var(--accent); font-family: var(--mono); }
+  .sponsor-card .txt p { color: var(--dim); font-size: 14px; margin-bottom: 16px; }
+
   ol.roadmap { list-style: none; counter-reset: r; }
   ol.roadmap li { counter-increment: r; padding: 14px 0 14px 56px; position: relative; border-bottom: 1px dashed var(--line); color: var(--dim); }
   ol.roadmap li::before { content: "v" counter(r, decimal-leading-zero); position: absolute; left: 0; top: 14px;
@@ -75,6 +82,7 @@
       <a href="#arch">架构</a>
       <a href="#quickstart">快速开始</a>
       <a href="#roadmap">路线图</a>
+      <a href="#sponsor">赞助</a>
       <a href="https://github.com/Yang1235744/nanyang-Helios1.2">GitHub</a>
     </nav>
   </div>
@@ -180,6 +188,21 @@
       <li><b>规模扩展</b> —— 更大分辨率与帧数、EMA、logit-normal 时间步采样、分布式训练。</li>
       <li><b>生态与分发</b> —— 模型仓库托管预训练权重、一行命令拉取即用的 CLI、社区 fine-tune 生态。</li>
     </ol>
+  </section>
+
+  <section id="sponsor">
+    <h2>赞助作者</h2>
+    <p class="sub">如果 Helios 对你有帮助，欢迎为我发电，支撑模型的训练算力与持续迭代。</p>
+    <div class="sponsor-card">
+      <a href="https://afdian.com/u/61e8fe4c1f4e11f1993752540025c377" target="_blank" rel="noopener">
+        <img src="afdian.jpg" alt="爱发电赞助二维码 · 南汇数码科技">
+      </a>
+      <div class="txt">
+        <h3>南汇数码科技 · 爱发电</h3>
+        <p>扫码或点击左侧二维码进入我的爱发电主页。每一笔赞助都会直接投入 nanyang-Helios 的开发：更大的模型、更长的视频、更好的画质。</p>
+        <a class="btn btn-primary" href="https://afdian.com/u/61e8fe4c1f4e11f1993752540025c377" target="_blank" rel="noopener">为我发电</a>
+      </div>
+    </div>
   </section>
 
 </div>
