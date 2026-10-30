@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nanyang Chat —— 本地 AI 助手 · 南阳数码工作室</title>
+<style>
+  :root {
+    --bg: #0b0e14; --panel: #121722; --line: #232b3a; --text: #e8edf5;
+    --dim: #93a0b4; --accent: #ff8a3d; --accent2: #4da3ff;
+    --mono: "Cascadia Code", Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; line-height: 1.6; }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+  nav { border-bottom: 1px solid var(--line); }
+  nav .wrap { display: flex; justify-content: space-between; align-items: center; height: 56px; }
+  .logo { font-family: var(--mono); font-weight: 700; color: var(--text); }
+  .logo em { color: var(--accent); font-style: normal; }
+  nav .links a { color: var(--dim); margin-left: 20px; font-size: 14px; }
+  nav .links a:hover { color: var(--text); text-decoration: none; }
+  nav .links a.on { color: var(--accent); }
+
+  .hero { padding: 64px 0 40px; text-align: center; }
+  .tag { font-family: var(--mono); color: var(--accent); font-size: 13px; letter-spacing: 1px; }
+  h1 { font-size: 42px; margin: 10px 0 14px;
+       background: linear-gradient(90deg, var(--accent), #ffd23d, var(--accent2));
+       -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sub { color: var(--dim); font-size: 17px; max-width: 660px; margin: 0 auto 28px; }
+  .btn { display: inline-block; padding: 13px 34px; border-radius: 8px; font-weight: 600; font-size: 16px; margin: 0 6px; }
+  .btn-primary { background: var(--accent); color: #16100a; }
+  .btn-primary:hover { filter: brightness(1.1); text-decoration: none; }
+  .btn-ghost { border: 1px solid var(--line); color: var(--text); }
+  .btn-ghost:hover { border-color: var(--accent2); text-decoration: none; }
+  .dl-note { margin-top: 12px; font-size: 13px; color: var(--dim); font-family: var(--mono); }
+
+  .shot { margin: 48px auto 0; max-width: 760px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.5); }
+  .shot-bar { background: #1a2130; padding: 8px 14px; display: flex; gap: 6px; align-items: center; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .shot-title { font-family: var(--mono); font-size: 11px; color: var(--dim); margin-left: 8px; }
+  .shot-body { display: flex; height: 320px; background: #0b0e14; text-align: left; }
+  .shot-side { width: 170px; background: #121722; border-right: 1px solid var(--line); padding: 12px; }
+  .shot-side .nb { background: var(--accent); color: #16100a; border-radius: 6px; text-align: center; font-size: 12px; font-weight: 700; padding: 7px 0; margin-bottom: 10px; }
+  .shot-side .cv { border: 1px solid var(--line); border-radius: 6px; padding: 6px 9px; font-size: 11px; color: var(--dim); margin-bottom: 6px; }
+  .shot-side .cv.on { color: var(--text); border-left: 2px solid var(--accent); }
+  .shot-main { flex: 1; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+  .bub { max-width: 75%; border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; font-size: 12px; }
+  .bub.u { align-self: flex-end; background: #16233c; }
+  .bub.b { align-self: flex-start; background: #121722; color: var(--dim); }
+  .shot-input { margin-top: auto; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; font-size: 12px; color: var(--dim); background: #0d1117; }
+
+  section { padding: 56px 0 8px; }
+  h2 { font-size: 28px; margin-bottom: 8px; }
+  h2::before { content: "// "; color: var(--accent); font-family: var(--mono); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 22px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
+  .card h3 { font-size: 15px; color: var(--accent); font-family: var(--mono); margin-bottom: 6px; }
+  .card p { color: var(--dim); font-size: 13px; }
+
+  .steps { margin-top: 18px; }
+  .step { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px dashed var(--line); }
+  .step .n { font-family: var(--mono); color: var(--accent); font-weight: 700; }
+  .step p { color: var(--dim); font-size: 14px; }
+  .step code { background: #0d1117; border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; font-family: var(--mono); font-size: 12px; color: var(--accent2); }
+
+  .req { color: var(--dim); font-size: 14px; margin-top: 14px; }
+  .req li { margin-left: 20px; }
+
+  footer { border-top: 1px solid var(--line); margin-top: 64px; padding: 22px 0; color: var(--dim); font-size: 13px; text-align: center; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="wrap">
+    <a class="logo" href="index.html">nanyang<em>/</em>Helios</a>
+    <div class="links">
+      <a href="index.html">Helios 模型</a>
+      <a href="chat.html" class="on">Chat 应用</a>
+      <a href="index.html#sponsor">赞助</a>
+      <a href="https://github.com/Yang1235744/nanyang-Helios1.2" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="tag">NANYANG CHAT v0.1.0a · WINDOWS 桌面版</div>
+    <h1>把 AI 助手装进自己电脑</h1>
+    <p class="sub">豆包式体验的本地桌面软件：聊天大模型 + Helios 图片生成 + 视频生成全部内嵌在一个 EXE 里，算力吃你自己的硬件，数据不出本机，无需登录。</p>
+    <a class="btn btn-primary" href="https://github.com/Yang1235744/nanyang-Chat/releases/latest/download/nanyang-Chat-windows-x64.zip">下载 Windows 版</a>
+    <a class="btn btn-ghost" href="https://github.com/Yang1235744/nanyang-Chat" target="_blank" rel="noopener">源码仓库</a>
+    <div class="dl-note">nanyang-Chat-windows-x64.zip · 解压即用 · 免安装 · 模型权重按需放入</div>
+
+    <div class="shot">
+      <div class="shot-bar">
+        <span class="dot" style="background:#ff5f57"></span>
+        <span class="dot" style="background:#febc2e"></span>
+        <span class="dot" style="background:#28c840"></span>
+        <span class="shot-title">nanyang Chat · 本地 AI 助手</span>
+      </div>
+      <div class="shot-body">
+        <div class="shot-side">
+          <div class="nb">＋ 新对话</div>
+          <div class="cv on">画一只雪地里的小狐狸</div>
+          <div class="cv">周末计划</div>
+        </div>
+        <div class="shot-main">
+          <div class="bub u">画一只雪地里的红狐</div>
+          <div class="bub b">生成图片 · 画一只雪地里的红狐<br>▦▦▦▦▦▦▦▦<br>▦▦❄🦊❄▦▦<br>▦▦▦▦▦▦▦▦</div>
+          <div class="bub u">真不错，再来段视频</div>
+          <div class="bub b">生成中，扩散采样需要一点时间…</div>
+          <div class="shot-input">说点什么…（Enter 发送）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <h2>为什么本地</h2>
+    <div class="grid">
+      <div class="card"><h3>三模一体</h3><p>聊天 LLM、Helios 图片生成、Helios 视频生成，全部打包进同一个软件，一个窗口全搞定。</p></div>
+      <div class="card"><h3>本地算力</h3><p>推理全在你自己机器上跑：有 NVIDIA GPU 自动加速，纯 CPU 也能跑。</p></div>
+      <div class="card"><h3>无需登录</h3><p>云端账户体系还没开放，当前版本零账户、零联网验证，打开就用。</p></div>
+      <div class="card"><h3>数据不出机</h3><p>会话记录与生成结果只存在你自己的 %APPDATA% 里，隐私天然有保障。</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>上手</h2>
+    <div class="steps">
+      <div class="step"><span class="n">01</span><p>下载并解压 <code>nanyang-Chat-windows-x64.zip</code>，双击 <code>nanyang-Chat.exe</code>。</p></div>
+      <div class="step"><span class="n">02</span><p>（可选）放入模型权重：聊天 <code>chat_latest.pt</code>、生成 <code>helios_latest_dit.pt</code>，放到 <code>%APPDATA%\nanyang-Chat\models\</code>，重启软件。未放权重时对应功能会明确提示"未训练"。</p></div>
+      <div class="step"><span class="n">03</span><p>底部切换 <code>聊天 / 生成图片 / 生成视频</code> 三种模式，Enter 发送。</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>系统要求</h2>
+    <ul class="req">
+      <li>Windows 10 / 11（64 位）</li>
+      <li>内存 ≥ 8 GB（建议 16 GB）</li>
+      <li>NVIDIA GPU 可选（自动启用 CUDA 加速）</li>
+      <li>从零自研模型持续迭代中，权重与软件版本会一起在 Releases 更新</li>
+    </ul>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">nanyang Chat · 南阳数码工作室 · 与 <a href="index.html">nanyang-Helios1.2</a> 同一血脉 · 本地优先，云端规划中</div>
+</footer>
+</body>
+</html>
