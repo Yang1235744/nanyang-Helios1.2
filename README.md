@@ -11,7 +11,7 @@
 ## 安装
 
 ```bash
-git clone https://github.com/OWNER/nanyang-Helios1.2.git
+git clone https://github.com/Yang1235744/nanyang-Helios1.2.git
 cd nanyang-Helios1.2
 pip install -r requirements.txt
 ```
