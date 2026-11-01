@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nanyang-GPT — 从零自研的字节级对话大模型</title>
+<meta name="description" content="nanyang-GPT：从零实现的 decoder-only 对话大模型，字节级 tokenizer，工具调用，GGUF / PyTorch 双格式双通道分发。">
+<style>
+  :root {
+    --bg: #0b0e14; --panel: #121722; --line: #232b3a;
+    --text: #e8edf5; --dim: #93a0b4; --accent: #52d273; --accent2: #4da3ff;
+    --mono: "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; line-height: 1.7; }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+  header { border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(11,14,20,.9); backdrop-filter: blur(8px); z-index: 10; }
+  header .wrap { display: flex; justify-content: space-between; align-items: center; height: 60px; }
+  .logo { font-family: var(--mono); font-weight: 700; font-size: 18px; }
+  .logo em { color: var(--accent); font-style: normal; }
+  nav a { margin-left: 24px; color: var(--dim); font-size: 14px; }
+  nav a:hover { color: var(--text); text-decoration: none; }
+
+  .hero { text-align: center; padding: 96px 0 72px; }
+  .hero h1 { font-family: var(--mono); font-size: clamp(34px, 6vw, 56px); font-weight: 800;
+    background: linear-gradient(90deg, var(--accent), #a8ff9e 45%, var(--accent2));
+    -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .badge { display: inline-block; font-family: var(--mono); font-size: 13px; color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 999px; padding: 2px 14px; margin-bottom: 20px; }
+  .hero p { color: var(--dim); max-width: 640px; margin: 20px auto 36px; font-size: 17px; }
+  .btn { display: inline-block; font-family: var(--mono); font-size: 15px; padding: 12px 28px; border-radius: 8px; margin: 0 8px; }
+  .btn-primary { background: var(--accent); color: #0a1610; font-weight: 700; }
+  .btn-primary:hover { filter: brightness(1.1); text-decoration: none; }
+  .btn-ghost { border: 1px solid var(--line); color: var(--text); }
+  .btn-ghost:hover { border-color: var(--accent2); text-decoration: none; }
+
+  section { padding: 64px 0; }
+  h2 { font-size: 28px; margin-bottom: 8px; }
+  h2::before { content: "// "; color: var(--accent); font-family: var(--mono); }
+  .sub { color: var(--dim); margin-bottom: 36px; }
+
+  .specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; }
+  .spec { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px; text-align: center; }
+  .spec .num { font-family: var(--mono); font-size: 26px; font-weight: 700; color: var(--accent); }
+  .spec .label { color: var(--dim); font-size: 13px; margin-top: 4px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+  .card h3 { font-size: 17px; margin-bottom: 8px; color: var(--accent2); font-family: var(--mono); }
+  .card p { color: var(--dim); font-size: 14px; }
+  .card.chan { border-color: var(--accent); }
+  .card.chan h3 { color: var(--accent); }
+  .chan .pill { display:inline-block; font-family: var(--mono); font-size: 11px; border: 1px solid var(--accent); color: var(--accent); border-radius: 999px; padding: 0 10px; margin-bottom: 10px; }
+
+  pre { background: #0d1117; border: 1px solid var(--line); border-radius: 12px; padding: 20px 24px;
+    overflow-x: auto; font-family: var(--mono); font-size: 14px; line-height: 1.8; }
+  pre .c { color: #5b6b82; } pre .cmd { color: #a8ff9e; }
+  .card pre { padding: 12px 16px; font-size: 13px; }
+  code { font-family: var(--mono); background: #0d1117; border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; font-size: 0.92em; }
+
+  footer { border-top: 1px solid var(--line); padding: 32px 0 48px; color: var(--dim); font-size: 14px; text-align: center; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="logo">nanyang<em>/</em>GPT</div>
+    <nav>
+      <a href="index.html">Helios1.2</a>
+      <a href="helios15.html">Helios1.5</a>
+      <a href="#channels">获取模型</a>
+      <a href="#quickstart">快速开始</a>
+      <a href="https://github.com/Yang1235744/nanyang-GPT">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="badge">v0.1.0a · 对话大模型</div>
+    <h1>nanyang-GPT</h1>
+    <p>从零自研的字节级对话大模型：tokenizer、架构、训练全自研，不依赖任何预训练权重。原生工具调用，与 Helios1.5 捆绑 —— 先聊天，再生成。</p>
+    <a class="btn btn-primary" href="https://github.com/Yang1235744/nanyang-GPT">在 GitHub 上查看</a>
+    <a class="btn btn-ghost" href="#channels">获取模型</a>
+  </div>
+
+  <section id="specs">
+    <h2>模型规格</h2>
+    <p class="sub">305M 参数，fp32 权重约 1.2 GB，fp16 约 0.6 GB。</p>
+    <div class="specs">
+      <div class="spec"><div class="num">305M</div><div class="label">参数量</div></div>
+      <div class="spec"><div class="num">259</div><div class="label">字节级词表（UTF-8）</div></div>
+      <div class="spec"><div class="num">2048</div><div class="label">上下文长度</div></div>
+      <div class="spec"><div class="num">24×1024</div><div class="label">层数 × 维度</div></div>
+      <div class="spec"><div class="num">2</div><div class="label">分发格式</div></div>
+    </div>
+  </section>
+
+  <section id="channels">
+    <h2>获取模型 —— 两种格式，两个通道</h2>
+    <p class="sub">同一个模型，按你的运行时选通道。</p>
+    <div class="grid">
+      <div class="card chan">
+        <span class="pill">通道一 · Ollama</span>
+        <h3>GGUF 格式</h3>
+        <p>转成 GGUF（gpt2 架构家族）后即可被 Ollama、llama.cpp 等本地运行时拉取使用：</p>
+        <pre><span class="cmd">pip install gguf</span>
+<span class="cmd">python -m nanyang_gpt.convert_gguf \</span>
+<span class="cmd">  --ckpt runs/nanyang_gpt/latest_gpt.pt \</span>
+<span class="cmd">  --out nanyang-gpt-f16.gguf --ftype f16</span>
+
+<span class="cmd">ollama create nanyang-gpt -f Modelfile</span>
+<span class="cmd">ollama run nanyang-gpt</span></pre>
+        <p style="margin-top:10px">拓扑与 GPT-2 一致（可学习位置嵌入、pre-norm、qkv 合一、GELU MLP、嵌入共享），转换器一行命令完成。</p>
+      </div>
+      <div class="card chan">
+        <span class="pill">通道二 · 通用</span>
+        <h3>PyTorch 格式</h3>
+        <p>标准 <code>.pt</code> checkpoint，任何 PyTorch 项目 <code>torch.load</code> 即用；与 Helios1.5 内置对话模型同架构同配置，权重直接互换：</p>
+        <pre><span class="cmd">git clone https://github.com/Yang1235744/nanyang-GPT.git</span>
+<span class="cmd">cd nanyang-GPT && pip install -r requirements.txt</span>
+
+<span class="c"># 预训练权重见 Releases</span>
+<span class="cmd">python -m nanyang_gpt.chat \</span>
+<span class="cmd">  --ckpt runs/nanyang_gpt/latest_gpt.pt</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <section id="quickstart">
+    <h2>快速开始</h2>
+    <p class="sub">从零训练你自己的对话模型，语料即放即训。</p>
+    <pre><span class="c"># 语料：对话文本放进 data/corpus/*.txt</span>
+<span class="c"># 格式：用户：... 助手：...（需要生成时带上 &lt;|gen_image|&gt; / &lt;|gen_video|&gt; 标记）</span>
+<span class="cmd">python -m nanyang_gpt.train --config configs/nanyang_gpt_medium.yaml</span>
+
+<span class="c"># 聊天</span>
+<span class="cmd">python -m nanyang_gpt.chat --ckpt runs/nanyang_gpt/latest_gpt.pt</span></pre>
+  </section>
+
+  <section id="tools">
+    <h2>工具调用</h2>
+    <p class="sub">聊天中发现生成意图，自动输出标记，交给 Helios1.5 执行。</p>
+    <div class="grid">
+      <div class="card">
+        <h3>模型输出标记</h3>
+        <p>语料教会模型在该生成时输出 <code>&lt;|gen_image|&gt;描述</code> 或 <code>&lt;|gen_video|&gt;描述</code>。</p>
+      </div>
+      <div class="card">
+        <h3>运行时解析</h3>
+        <p><code>parse_tool()</code> 把回复拆成（文本, 工具类型, 生成提示词），Helios1.5 接管出图 / 出视频。</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <p>nanyang-GPT · MIT License · 从零自研，持续迭代</p>
+    <p><a href="https://github.com/Yang1235744/nanyang-GPT">github.com/Yang1235744/nanyang-GPT</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
