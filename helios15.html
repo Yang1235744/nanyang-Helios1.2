@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nanyang-Helios1.5 — 中等视频/图片生成模型（含音频 + 南阳GPT）</title>
+<meta name="description" content="nanyang-Helios1.5 中等模型：15 秒带音频视频生成、高清图片、捆绑南阳 GPT 对话大模型，对标豆包/千问生成能力。">
+<style>
+  :root {
+    --bg: #0b0e14; --panel: #121722; --line: #232b3a;
+    --text: #e8edf5; --dim: #93a0b4; --accent: #ff8a3d; --accent2: #4da3ff; --good: #52d273;
+    --mono: "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; line-height: 1.7; }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+
+  header { border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(11,14,20,.92); backdrop-filter: blur(8px); z-index: 10; }
+  header .wrap { display: flex; justify-content: space-between; align-items: center; height: 60px; }
+  .logo { font-family: var(--mono); font-weight: 700; font-size: 18px; }
+  .logo em { color: var(--accent); font-style: normal; }
+  nav a { margin-left: 22px; color: var(--dim); font-size: 14px; }
+  nav a:hover { color: var(--text); text-decoration: none; }
+  nav a.new { color: var(--good); }
+
+  .hero { text-align: center; padding: 96px 0 64px; }
+  .badge { display: inline-block; font-family: var(--mono); font-size: 13px; color: var(--good);
+    border: 1px solid var(--good); border-radius: 999px; padding: 2px 14px; margin-bottom: 20px; }
+  .hero h1 { font-family: var(--mono); font-size: clamp(34px, 6vw, 56px); font-weight: 800;
+    background: linear-gradient(90deg, var(--good), var(--accent2) 50%, var(--accent));
+    -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero p { color: var(--dim); max-width: 680px; margin: 20px auto 32px; font-size: 17px; }
+  .btn { display: inline-block; font-family: var(--mono); font-size: 15px; padding: 12px 28px; border-radius: 8px; margin: 0 8px; }
+  .btn-primary { background: var(--accent); color: #16100a; font-weight: 700; }
+  .btn-primary:hover { filter: brightness(1.1); text-decoration: none; }
+  .btn-ghost { border: 1px solid var(--line); color: var(--text); }
+  .btn-ghost:hover { border-color: var(--accent2); text-decoration: none; }
+
+  section { padding: 56px 0; }
+  h2 { font-size: 28px; margin-bottom: 8px; }
+  h2::before { content: "// "; color: var(--accent); font-family: var(--mono); }
+  .sub { color: var(--dim); margin-bottom: 32px; }
+
+  .specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+  .spec { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 22px; text-align: center; }
+  .spec .num { font-family: var(--mono); font-size: 30px; font-weight: 800; color: var(--accent); }
+  .spec .label { color: var(--dim); font-size: 13px; margin-top: 4px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+  .card h3 { font-size: 17px; margin-bottom: 8px; color: var(--accent2); font-family: var(--mono); }
+  .card p { color: var(--dim); font-size: 14px; }
+  .card .tag { display: inline-block; font-family: var(--mono); font-size: 11px; color: var(--good); border: 1px solid var(--good); border-radius: 4px; padding: 1px 6px; margin-bottom: 10px; }
+
+  pre { background: #0d1117; border: 1px solid var(--line); border-radius: 12px; padding: 20px 24px;
+    overflow-x: auto; font-family: var(--mono); font-size: 14px; line-height: 1.9; }
+  pre .c { color: #5b6b82; } pre .cmd { color: #ffd23d; }
+
+  .arch { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 28px; overflow-x: auto; }
+  .arch text { font-family: var(--mono); fill: var(--text); font-size: 13px; }
+  .arch .lbl { fill: var(--dim); font-size: 11px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+  th { color: var(--dim); font-weight: 500; font-family: var(--mono); }
+  td { color: var(--text); }
+
+  ol.roadmap { list-style: none; counter-reset: r; }
+  ol.roadmap li { counter-increment: r; padding: 14px 0 14px 56px; position: relative; border-bottom: 1px dashed var(--line); color: var(--dim); }
+  ol.roadmap li::before { content: "v" counter(r, decimal-leading-zero); position: absolute; left: 0; top: 14px;
+    font-family: var(--mono); font-size: 13px; color: var(--accent); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; background: var(--panel); }
+  ol.roadmap li b { color: var(--text); }
+  ol.roadmap li.done::before { color: var(--good); border-color: var(--good); }
+
+  footer { border-top: 1px solid var(--line); padding: 32px 0 48px; color: var(--dim); font-size: 14px; text-align: center; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="logo">nanyang<em>/</em>Helios<em>1.5</em></div>
+    <nav>
+      <a href="index.html">← Helios1.2</a>
+      <a href="#specs">规格</a>
+      <a href="#features">特性</a>
+      <a href="#arch">架构</a>
+      <a href="#quickstart">快速开始</a>
+      <a href="#roadmap">路线图</a>
+      <a href="https://github.com/Yang1235744/nanyang-Helios1.5">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="badge">v1.5.0a0 · 中等模型</div>
+    <h1>nanyang-Helios1.5</h1>
+    <p>中等规模多模态生成模型：<b>15 秒带音频视频</b>、<b>高清图片</b>，并捆绑<b>南阳 GPT</b> 对话大模型 —— 先聊天，再生成。对标豆包、千问等生成式产品，全部自研自训，权重约 5.5 GB。</p>
+    <a class="btn btn-primary" href="https://github.com/Yang1235744/nanyang-Helios1.5">在 GitHub 上查看</a>
+    <a class="btn btn-ghost" href="#quickstart">快速开始</a>
+  </div>
+
+  <section id="specs">
+    <h2>模型规格</h2>
+    <p class="sub">1.38B 参数，fp32 权重约 5.5 GB，fp16 推理约 2.8 GB。</p>
+    <div class="specs">
+      <div class="spec"><div class="num">15s</div><div class="label">视频时长（12fps = 180 帧）</div></div>
+      <div class="spec"><div class="num">1024</div><div class="label">图片最高分辨率 px</div></div>
+      <div class="spec"><div class="num">24kHz</div><div class="label">音频采样率</div></div>
+      <div class="spec"><div class="num">1.38B</div><div class="label">总参数量</div></div>
+      <div class="spec"><div class="num">5.5GB</div><div class="label">fp32 权重体积</div></div>
+    </div>
+  </section>
+
+  <section id="features">
+    <h2>特性</h2>
+    <p class="sub">在 1.2 早期版基础上补齐的关键能力。</p>
+    <div class="grid">
+      <div class="card">
+        <span class="tag">NEW</span>
+        <h3>15 秒长视频</h3>
+        <p>时空解耦注意力：空间注意力逐帧、时间注意力跨帧，避免 180 帧全注意力的二次方开销，让 15 秒视频可在单卡上训练与生成。</p>
+      </div>
+      <div class="card">
+        <span class="tag">NEW</span>
+        <h3>同步音频生成</h3>
+        <p>AudioVAE 把 mel 谱压缩到 latent，AudioDiT 以文本+视频为条件做 1D 流动匹配，生成与画面同步的 15 秒音轨（24kHz）。</p>
+      </div>
+      <div class="card">
+        <span class="tag">UPGRADE</span>
+        <h3>高清图片</h3>
+        <p>VAE 升级到 base 128、16 通道 latent，承载 1024px 细节；训练分辨率与 latent 空间同步扩展。</p>
+      </div>
+      <div class="card">
+        <span class="tag">NEW</span>
+        <h3>捆绑南阳 GPT</h3>
+        <p>中等对话大模型，通过工具调用标记 <code>&lt;|gen_image|&gt;</code> / <code>&lt;|gen_video|&gt;</code> 触发 Helios 生成 —— 聊天与生成在同一个模型里完成。</p>
+      </div>
+      <div class="card">
+        <h3>字节级文本编码器</h3>
+        <p>自研 UTF-8 字节级 tokenizer（词表 259），中英文 prompt 原生支持，不依赖任何预训练。</p>
+      </div>
+      <div class="card">
+        <h3>Rectified Flow</h3>
+        <p>直线流匹配 + Euler 采样 + CFG，统一驱动视频/图片/音频三种生成任务，实现简洁稳定。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="arch">
+    <h2>架构</h2>
+    <p class="sub">南阳 GPT 调度 + 视频/图片 DiT + 音频 DiT，三股生成能力合为一个中等模型。</p>
+    <div class="arch">
+      <svg viewBox="0 0 900 300" width="100%" role="img" aria-label="Helios 1.5 架构图">
+        <defs>
+          <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#4da3ff"/>
+          </marker>
+        </defs>
+        <rect x="20" y="120" width="150" height="56" rx="8" fill="#1a2233" stroke="#52d273" stroke-width="2"/>
+        <text x="95" y="148" text-anchor="middle" font-size="15">南阳 GPT</text>
+        <text x="95" y="166" text-anchor="middle" class="lbl">对话 + 工具调用</text>
+
+        <rect x="210" y="30" width="160" height="48" rx="8" fill="#121722" stroke="#4da3ff"/>
+        <text x="290" y="58" text-anchor="middle">图片 DiT</text>
+        <rect x="210" y="120" width="160" height="56" rx="8" fill="#121722" stroke="#ff8a3d" stroke-width="2"/>
+        <text x="290" y="148" text-anchor="middle" font-size="15">HeliosDiT</text>
+        <text x="290" y="166" text-anchor="middle" class="lbl">15s 视频 · 时空解耦</text>
+        <rect x="210" y="222" width="160" height="48" rx="8" fill="#121722" stroke="#4da3ff"/>
+        <text x="290" y="250" text-anchor="middle">AudioDiT</text>
+
+        <line x1="170" y1="135" x2="210" y2="54" stroke="#4da3ff" stroke-width="1.5" marker-end="url(#ar2)"/>
+        <line x1="170" y1="148" x2="210" y2="148" stroke="#ff8a3d" stroke-width="1.5" marker-end="url(#ar2)"/>
+        <line x1="170" y1="161" x2="210" y2="246" stroke="#4da3ff" stroke-width="1.5" marker-end="url(#ar2)"/>
+
+        <rect x="420" y="30" width="120" height="48" rx="8" fill="#121722" stroke="#4da3ff"/>
+        <text x="480" y="58" text-anchor="middle">VAE 解码</text>
+        <rect x="420" y="120" width="120" height="56" rx="8" fill="#121722" stroke="#4da3ff"/>
+        <text x="480" y="148" text-anchor="middle">VAE 解码</text>
+        <text x="480" y="166" text-anchor="middle" class="lbl">8x · 逐帧</text>
+        <rect x="420" y="222" width="120" height="48" rx="8" fill="#121722" stroke="#4da3ff"/>
+        <text x="480" y="250" text-anchor="middle">AudioVAE 解码</text>
+
+        <line x1="370" y1="54" x2="420" y2="54" stroke="#4da3ff" stroke-width="1.5" marker-end="url(#ar2)"/>
+        <line x1="370" y1="148" x2="420" y2="148" stroke="#4da3ff" stroke-width="1.5" marker-end="url(#ar2)"/>
+        <line x1="370" y1="246" x2="420" y2="246" stroke="#4da3ff" stroke-width="1.5" marker-end="url(#ar2)"/>
+
+        <rect x="590" y="30" width="70" height="48" rx="8" fill="#121722" stroke="#52d273"/>
+        <text x="625" y="58" text-anchor="middle">高清图</text>
+        <rect x="590" y="120" width="70" height="56" rx="8" fill="#121722" stroke="#52d273"/>
+        <text x="625" y="148" text-anchor="middle">15s 视频</text>
+        <text x="625" y="166" text-anchor="middle" class="lbl">+ 音轨</text>
+        <rect x="590" y="222" width="70" height="48" rx="8" fill="#121722" stroke="#52d273"/>
+        <text x="625" y="250" text-anchor="middle">音频</text>
+
+        <line x1="540" y1="54" x2="590" y2="54" stroke="#52d273" stroke-width="1.5" marker-end="url(#ar2)"/>
+        <line x1="540" y1="148" x2="590" y2="148" stroke="#52d273" stroke-width="1.5" marker-end="url(#ar2)"/>
+        <line x1="540" y1="246" x2="590" y2="246" stroke="#52d273" stroke-width="1.5" marker-end="url(#ar2)"/>
+      </svg>
+    </div>
+  </section>
+
+  <section>
+    <h2>参数量</h2>
+    <p class="sub">各子模型参数量与权重体积。</p>
+    <div class="arch">
+      <table>
+        <thead><tr><th>模块</th><th>参数量</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>HeliosDiT（视频/图片）</td><td>707 M</td><td>dim 1024 · depth 24 · 时空解耦注意力</td></tr>
+          <tr><td>南阳 GPT</td><td>305 M</td><td>dim 1024 · depth 24 · 工具调用</td></tr>
+          <tr><td>TextEncoder</td><td>152 M</td><td>字节级 · dim 1024</td></tr>
+          <tr><td>AudioDiT</td><td>137 M</td><td>1D 流动匹配 · dim 768</td></tr>
+          <tr><td>VAE</td><td>76 M</td><td>base 128 · 16 通道 latent</td></tr>
+          <tr><td>AudioVAE</td><td>3 M</td><td>mel ↔ latent</td></tr>
+          <tr><td><b>总计</b></td><td><b>1.38 B</b></td><td><b>fp32 ≈ 5.5 GB · fp16 ≈ 2.8 GB</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="quickstart">
+    <h2>快速开始</h2>
+    <p class="sub">四阶段训练：VAE → DiT → 音频 → 南阳 GPT。</p>
+    <pre><span class="cmd">git clone https://github.com/Yang1235744/nanyang-Helios1.5.git</span>
+<span class="cmd">cd nanyang-Helios1.5 && pip install -r requirements.txt</span>
+
+<span class="c"># 四阶段训练</span>
+<span class="cmd">python -m helios.train --config configs/helios_medium.yaml --stage vae</span>      <span class="c"># VAE</span>
+<span class="cmd">python -m helios.train --config configs/helios_medium.yaml --stage dit</span>      <span class="c"># 视频/图片 DiT</span>
+<span class="cmd">python -m helios.train --config configs/helios_medium.yaml --stage audio</span>    <span class="c"># 音频 VAE + AudioDiT</span>
+<span class="cmd">python -m helios.train --config configs/helios_medium.yaml --stage gpt</span>      <span class="c"># 南阳 GPT</span>
+
+<span class="c"># 生成图片</span>
+<span class="cmd">python -m helios.sample --ckpt runs/helios15_medium/latest_dit.pt --prompt "雪地里的红狐" --type image</span>
+
+<span class="c"># 生成 15 秒视频 + 音轨</span>
+<span class="cmd">python -m helios.sample --ckpt runs/helios15_medium/latest_dit.pt \</span>
+<span class="cmd">  --audio-vae runs/helios15_medium/audio_vae.pt --audio-ckpt runs/helios15_medium/audio_dit.pt \</span>
+<span class="cmd">  --prompt "海浪拍打沙滩" --type video --out waves</span></pre>
+  </section>
+
+  <section id="roadmap">
+    <h2>路线图</h2>
+    <p class="sub">从零起步，逐版本累积。</p>
+    <ol class="roadmap">
+      <li class="done"><b>Helios1.2 早期版</b> —— 统一图文/视频 DiT + 字节级文本编码器 + Rectified Flow。</li>
+      <li class="done"><b>Helios1.5 中等版</b> —— 15 秒视频 + 音频 + 高清图片 + 南阳 GPT 捆绑，1.38B 参数。</li>
+      <li><b>因果 3D VAE</b> —— 时间维压缩，更平滑的视频 latent，降低长视频显存。</li>
+      <li><b>规模扩展</b> —— 更大分辨率与帧数、EMA、logit-normal 时间步、分布式训练。</li>
+      <li><b>生态与分发</b> —— 模型仓库托管预训练权重、一行命令拉取即用 CLI、社区 fine-tune。</li>
+    </ol>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <p>nanyang-Helios1.5 · MIT License · 从零自研，持续迭代</p>
+    <p><a href="https://github.com/Yang1235744/nanyang-Helios1.5">github.com/Yang1235744/nanyang-Helios1.5</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
