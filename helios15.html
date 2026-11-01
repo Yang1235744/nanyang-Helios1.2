@@ -139,7 +139,7 @@
       <div class="card">
         <span class="tag">NEW</span>
         <h3>捆绑南阳 GPT</h3>
-        <p>中等对话大模型，通过工具调用标记 <code>&lt;|gen_image|&gt;</code> / <code>&lt;|gen_video|&gt;</code> 触发 Helios 生成 —— 聊天与生成在同一个模型里完成。</p>
+        <p>中等对话大模型，通过工具调用标记 <code>&lt;|gen_image|&gt;</code> / <code>&lt;|gen_video|&gt;</code> 触发 Helios 生成 —— 聊天与生成在同一个模型里完成。已单独开源：<a href="https://github.com/Yang1235744/nanyang-GPT">nanyang-GPT 独立仓库 →</a></p>
       </div>
       <div class="card">
         <h3>字节级文本编码器</h3>
@@ -238,6 +238,11 @@
         <h3>预训练权重</h3>
         <p>训练完成的 checkpoint（VAE / HeliosDiT / 音频 / 南阳 GPT）发布在 GitHub Releases，下载后放到 <code>runs/helios15_medium/</code> 即可直接生成，无需自己训练。</p>
         <p style="margin-top:10px"><a href="https://github.com/Yang1235744/nanyang-Helios1.5/releases">Releases 下载页 →</a></p>
+      </div>
+      <div class="card">
+        <h3>只要对话模型？</h3>
+        <p>南阳 GPT 已独立开源（305M，字节级，从零自研），可单独拉取训练、聊天，checkpoint 与本仓库内置版直接互换：</p>
+        <pre style="margin-top:12px"><span class="cmd">git clone https://github.com/Yang1235744/nanyang-GPT.git</span></pre>
       </div>
       <div class="card">
         <h3>接入 Ollama 等运行时</h3>
