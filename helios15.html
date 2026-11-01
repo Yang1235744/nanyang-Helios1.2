@@ -99,20 +99,20 @@
   <div class="hero">
     <div class="badge">v1.5.0a0 · 中等模型</div>
     <h1>nanyang-Helios1.5</h1>
-    <p>中等规模多模态生成模型：<b>15 秒带音频视频</b>、<b>高清图片</b>，并捆绑<b>南阳 GPT</b> 对话大模型 —— 先聊天，再生成。对标豆包、千问等生成式产品，全部自研自训，权重约 5.5 GB。</p>
+    <p>中等规模多模态生成模型：<b>15 秒带音频视频</b>、<b>高清图片</b>，并捆绑<b>南阳 GPT</b> 对话大模型 —— 先聊天，再生成。对标豆包、千问等生成式产品，全部自研自训，权重约 5.9 GB。</p>
     <a class="btn btn-primary" href="https://github.com/Yang1235744/nanyang-Helios1.5">在 GitHub 上查看</a>
     <a class="btn btn-ghost" href="#quickstart">快速开始</a>
   </div>
 
   <section id="specs">
     <h2>模型规格</h2>
-    <p class="sub">1.38B 参数，fp32 权重约 5.5 GB，fp16 推理约 2.8 GB。</p>
+    <p class="sub">1.49B 参数，fp32 权重约 5.9 GB，fp16 推理约 3.0 GB。</p>
     <div class="specs">
       <div class="spec"><div class="num">15s</div><div class="label">视频时长（12fps = 180 帧）</div></div>
       <div class="spec"><div class="num">1024</div><div class="label">图片最高分辨率 px</div></div>
       <div class="spec"><div class="num">24kHz</div><div class="label">音频采样率</div></div>
-      <div class="spec"><div class="num">1.38B</div><div class="label">总参数量</div></div>
-      <div class="spec"><div class="num">5.5GB</div><div class="label">fp32 权重体积</div></div>
+      <div class="spec"><div class="num">1.49B</div><div class="label">总参数量</div></div>
+      <div class="spec"><div class="num">5.9GB</div><div class="label">fp32 权重体积</div></div>
     </div>
   </section>
 
@@ -211,13 +211,13 @@
       <table>
         <thead><tr><th>模块</th><th>参数量</th><th>说明</th></tr></thead>
         <tbody>
-          <tr><td>HeliosDiT（视频/图片）</td><td>707 M</td><td>dim 1024 · depth 24 · 时空解耦注意力</td></tr>
+          <tr><td>HeliosDiT（视频/图片）</td><td>813 M</td><td>dim 1024 · depth 24 · 时空解耦注意力</td></tr>
           <tr><td>南阳 GPT</td><td>305 M</td><td>dim 1024 · depth 24 · 工具调用</td></tr>
           <tr><td>TextEncoder</td><td>152 M</td><td>字节级 · dim 1024</td></tr>
           <tr><td>AudioDiT</td><td>137 M</td><td>1D 流动匹配 · dim 768</td></tr>
           <tr><td>VAE</td><td>76 M</td><td>base 128 · 16 通道 latent</td></tr>
           <tr><td>AudioVAE</td><td>3 M</td><td>mel ↔ latent</td></tr>
-          <tr><td><b>总计</b></td><td><b>1.38 B</b></td><td><b>fp32 ≈ 5.5 GB · fp16 ≈ 2.8 GB</b></td></tr>
+          <tr><td><b>总计</b></td><td><b>1.49 B</b></td><td><b>fp32 ≈ 5.9 GB · fp16 ≈ 3.0 GB</b></td></tr>
         </tbody>
       </table>
     </div>
@@ -249,7 +249,7 @@
     <p class="sub">从零起步，逐版本累积。</p>
     <ol class="roadmap">
       <li class="done"><b>Helios1.2 早期版</b> —— 统一图文/视频 DiT + 字节级文本编码器 + Rectified Flow。</li>
-      <li class="done"><b>Helios1.5 中等版</b> —— 15 秒视频 + 音频 + 高清图片 + 南阳 GPT 捆绑，1.38B 参数。</li>
+      <li class="done"><b>Helios1.5 中等版</b> —— 15 秒视频 + 音频 + 高清图片 + 南阳 GPT 捆绑，1.49B 参数。</li>
       <li><b>因果 3D VAE</b> —— 时间维压缩，更平滑的视频 latent，降低长视频显存。</li>
       <li><b>规模扩展</b> —— 更大分辨率与帧数、EMA、logit-normal 时间步、分布式训练。</li>
       <li><b>生态与分发</b> —— 模型仓库托管预训练权重、一行命令拉取即用 CLI、社区 fine-tune。</li>
