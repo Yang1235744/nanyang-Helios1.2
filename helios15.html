@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>nanyang-Helios1.5 — 中等视频/图片生成模型（含音频 + 南阳GPT）</title>
-<meta name="description" content="nanyang-Helios1.5 中等模型：15 秒带音频视频生成、高清图片、捆绑南阳 GPT 对话大模型，对标豆包/千问生成能力。">
+<meta name="description" content="nanyang-Helios1.5 中等模型：15 秒带音频视频生成、高清图片、捆绑南阳 GPT 对话大模型，从零自研开源。">
 <style>
   :root {
     --bg: #0b0e14; --panel: #121722; --line: #232b3a;
@@ -87,6 +87,7 @@
       <a href="#specs">规格</a>
       <a href="#features">特性</a>
       <a href="#arch">架构</a>
+      <a href="#download">获取模型</a>
       <a href="#quickstart">快速开始</a>
       <a href="#roadmap">路线图</a>
       <a href="https://github.com/Yang1235744/nanyang-Helios1.5">GitHub</a>
@@ -99,7 +100,7 @@
   <div class="hero">
     <div class="badge">v1.5.0a0 · 中等模型</div>
     <h1>nanyang-Helios1.5</h1>
-    <p>中等规模多模态生成模型：<b>15 秒带音频视频</b>、<b>高清图片</b>，并捆绑<b>南阳 GPT</b> 对话大模型 —— 先聊天，再生成。对标豆包、千问等生成式产品，全部自研自训，权重约 5.9 GB。</p>
+    <p>中等规模多模态生成模型：<b>15 秒带音频视频</b>、<b>高清图片</b>，并捆绑<b>南阳 GPT</b> 对话大模型 —— 先聊天，再生成。全部自研自训，权重约 5.9 GB。</p>
     <a class="btn btn-primary" href="https://github.com/Yang1235744/nanyang-Helios1.5">在 GitHub 上查看</a>
     <a class="btn btn-ghost" href="#quickstart">快速开始</a>
   </div>
@@ -223,6 +224,28 @@
     </div>
   </section>
 
+  <section id="download">
+    <h2>获取模型</h2>
+    <p class="sub">代码与权重全部免费开放，一行命令拉取。</p>
+    <div class="grid">
+      <div class="card">
+        <h3>Git 克隆（推荐）</h3>
+        <p>拿到全部源码、配置与数据管线：</p>
+        <pre style="margin-top:12px"><span class="cmd">git clone https://github.com/Yang1235744/nanyang-Helios1.5.git</span>
+<span class="cmd">cd nanyang-Helios1.5 && pip install -r requirements.txt</span></pre>
+      </div>
+      <div class="card">
+        <h3>预训练权重</h3>
+        <p>训练完成的 checkpoint（VAE / HeliosDiT / 音频 / 南阳 GPT）发布在 GitHub Releases，下载后放到 <code>runs/helios15_medium/</code> 即可直接生成，无需自己训练。</p>
+        <p style="margin-top:10px"><a href="https://github.com/Yang1235744/nanyang-Helios1.5/releases">Releases 下载页 →</a></p>
+      </div>
+      <div class="card">
+        <h3>接入 Ollama 等运行时</h3>
+        <p>Ollama 这类运行时只能拉取 <b>GGUF 格式的大语言模型</b>。视频 / 图片 / 音频生成权重是 PyTorch checkpoint，物理上无法走 <code>ollama pull</code>——这不是链接问题，是格式不支持。南阳 GPT 是标准 decoder-only 语言模型，后续会提供 <b>GGUF 转换版</b>，届时可直接被这类运行时拉取聊天。</p>
+      </div>
+    </div>
+  </section>
+
   <section id="quickstart">
     <h2>快速开始</h2>
     <p class="sub">四阶段训练：VAE → DiT → 音频 → 南阳 GPT。</p>
@@ -236,11 +259,11 @@
 <span class="cmd">python -m helios.train --config configs/helios_medium.yaml --stage gpt</span>      <span class="c"># 南阳 GPT</span>
 
 <span class="c"># 生成图片</span>
-<span class="cmd">python -m helios.sample --ckpt runs/helios15_medium/latest_dit.pt --prompt "雪地里的红狐" --type image</span>
+<span class="cmd">python -m helios.sample --ckpt runs/helios15_medium/dit/latest_dit.pt --prompt "雪地里的红狐" --type image</span>
 
 <span class="c"># 生成 15 秒视频 + 音轨</span>
-<span class="cmd">python -m helios.sample --ckpt runs/helios15_medium/latest_dit.pt \</span>
-<span class="cmd">  --audio-vae runs/helios15_medium/audio_vae.pt --audio-ckpt runs/helios15_medium/audio_dit.pt \</span>
+<span class="cmd">python -m helios.sample --ckpt runs/helios15_medium/dit/latest_dit.pt \</span>
+<span class="cmd">  --audio-vae runs/helios15_medium/audio/audio_vae.pt --audio-ckpt runs/helios15_medium/audio/audio_dit.pt \</span>
 <span class="cmd">  --prompt "海浪拍打沙滩" --type video --out waves</span></pre>
   </section>
 
@@ -250,6 +273,8 @@
     <ol class="roadmap">
       <li class="done"><b>Helios1.2 早期版</b> —— 统一图文/视频 DiT + 字节级文本编码器 + Rectified Flow。</li>
       <li class="done"><b>Helios1.5 中等版</b> —— 15 秒视频 + 音频 + 高清图片 + 南阳 GPT 捆绑，1.49B 参数。</li>
+      <li><b>剧情对白与口型同步</b> —— 南阳 GPT 写台词脚本 → 语音合成出人物对白 → 唇部区域对齐，让角色真正开口说话。</li>
+      <li><b>南阳 GPT GGUF 版</b> —— 转换对话模型为 GGUF，接入 Ollama 等本地运行时，一行命令拉取即聊。</li>
       <li><b>因果 3D VAE</b> —— 时间维压缩，更平滑的视频 latent，降低长视频显存。</li>
       <li><b>规模扩展</b> —— 更大分辨率与帧数、EMA、logit-normal 时间步、分布式训练。</li>
       <li><b>生态与分发</b> —— 模型仓库托管预训练权重、一行命令拉取即用 CLI、社区 fine-tune。</li>
