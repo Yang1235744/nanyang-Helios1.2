@@ -160,6 +160,10 @@
         <h3>运行时解析</h3>
         <p><code>parse_tool()</code> 把回复拆成（文本, 工具类型, 生成提示词），Helios1.5 接管出图 / 出视频。</p>
       </div>
+      <div class="card">
+        <h3>看图理解</h3>
+        <p>自研 TinyVisionEncoder：图片编码成 64 个视觉 token 作为对话前缀，模型看着图回答。<code>python -m nanyang_gpt.chat --ckpt ... --image 图.jpg</code></p>
+      </div>
     </div>
   </section>
 
