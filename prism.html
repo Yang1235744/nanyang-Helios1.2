@@ -91,6 +91,7 @@
       <a href="#training">训练流程</a>
       <a href="#quickstart">快速开始</a>
       <a href="#repo">源码获取</a>
+      <a href="#feedback">公测反馈</a>
     </nav>
   </div>
 </header>
@@ -98,10 +99,11 @@
 <div class="wrap">
 
   <div class="hero">
-    <div class="badge">v2.0.2 · 正式版 · 全自研从零构建</div>
+    <div class="badge">v2.0.2-beta · 公测版 · 全自研从零构建</div>
     <h1>nanyang-Prism-Max-H2.0</h1>
     <p>全部从零自研，零第三方模型权重、零外部 API。<br>
-    自研 Self-DiT + SelfVAE（对称3D VAE），支持高清静态图片与 <strong>30 秒稳定视频</strong>输出，彻底解决花屏问题。</p>
+    自研 Self-DiT + SelfVAE（对称3D VAE），已彻底解决旧版花屏问题。<br>
+    <strong>公测版现状</strong>：开放 96px 验证权重的端到端体验（CPU 可跑）；1024px 高清与 30 秒视频随 GPU 训练版放出。</p>
     <a class="btn btn-primary" href="https://github.com/Yang1235744/nanyang-Prism-Max-H2.0">在 GitHub 上查看</a>
     <a class="btn btn-ghost" href="#architecture">看自研架构</a>
   </div>
@@ -148,7 +150,7 @@
 
   <section id="capabilities">
     <h2>能力规格</h2>
-    <p class="sub">v2.0.2 正式版新增的两项核心能力。</p>
+    <p class="sub">公测版开放的两项核心能力，欢迎实测后反馈问题。</p>
     <div class="grid">
       <div class="card chan">
         <h3>Flux / SDXL 双通道优化</h3>
@@ -168,7 +170,7 @@
       <img src="https://raw.githubusercontent.com/Yang1235744/nanyang-Prism-Max-H2.0/master/examples/sample_landscape_96px_x4.png"
            alt="按山水风景提示词生成的样本" style="width:100%;max-width:384px;border-radius:8px;border:1px solid var(--line)">
       <p style="margin-top:12px;font-size:13px">prompt：山水风景 蓝天 雪山 湖泊 · seed=42 · 24 步采样 · 96×96 · CPU 训练 550 步</p>
-      <p style="margin-top:6px;font-size:12px;color:var(--dim)">这是最小验证规模；1024px 高清与 30 秒视频需 GPU + 万张级真实数据集训练。</p>
+      <p style="margin-top:6px;font-size:12px;color:var(--dim)">公测期已知：96px 权重只有构图色块、无细节，属预期行为；1024px 高清与 30 秒视频需 GPU 训练版。</p>
     </div>
   </section>
 
@@ -243,27 +245,58 @@
   </section>
 
   <section id="repo">
-    <h2>源码获取</h2>
-    <p class="sub">GitHub 公开仓库，零依赖外部模型的纯自研代码。</p>
+    <h2>源码与公测权重</h2>
+    <p class="sub">GitHub 公开仓库，零依赖外部模型的纯自研代码。公测权重直接随仓库提供。</p>
     <div class="grid">
       <div class="card chan">
-        <span class="pill">模型权重</span>
-        <h3>nanyang-Prism-Max-Weights</h3>
-        <p>训练好的模型权重（Self-DiT + SelfVAE）即将开源：</p>
-        <pre><span class="cmd">git clone https://github.com/Yang1235744/nanyang-Prism-Max-H2.0-Weights.git</span></pre>
-        <p style="font-size:12px;color:var(--warn)">⏳ 训练完成后更新链接</p>
+        <span class="pill">公测权重 · 96px</span>
+        <h3>weights/ 目录</h3>
+        <p>96px 验证权重已随源码仓库提供，CPU 即可推理（61MB + 24MB）：</p>
+        <pre><span class="cmd">git clone https://github.com/Yang1235744/nanyang-Prism-Max-H2.0.git</span>
+<span class="c"># weights/vae_latest_96px.pt</span>
+<span class="c"># weights/dit_latest_96px.pt</span></pre>
+        <p style="font-size:12px;color:var(--warn)">1024px 正式权重训练中，完成后单独放出</p>
       </div>
       <div class="card chan">
         <span class="pill">源码</span>
-        <h3>nanyang-Prism-Max-H2.0-Weights</h3>
+        <h3>nanyang-Prism-Max-H2.0</h3>
         <p>全部自研，无任何第三方预训练权重依赖：</p>
         <pre><span class="cmd">git clone https://github.com/Yang1235744/nanyang-Prism-Max-H2.0.git</span></pre>
       </div>
       <div class="card">
         <span class="pill">技术文档</span>
         <h3>架构说明</h3>
-        <p>README 内含完整架构图、防花屏原理及训练注意事项。</p>
+        <p>README 内含完整架构图、防花屏原理、本机训练验证记录及训练注意事项。</p>
         <pre><span class="cmd">cat README.md</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <section id="feedback">
+    <h2>公测反馈</h2>
+    <p class="sub">这是 beta 版本，功能与画质都在迭代。遇到问题、想要的能力，直接提给我们。</p>
+    <div class="grid">
+      <div class="card chan">
+        <h3>提交 Bug / 画质问题</h3>
+        <p>花屏、噪点、色彩异常、形状报错、显存/内存溢出——附上 prompt、seed、参数与截图。</p>
+        <p style="margin-top:12px">
+          <a class="btn btn-primary" style="font-size:13px;padding:8px 18px"
+             href="https://github.com/Yang1235744/nanyang-Prism-Max-H2.0/issues/new?labels=bug&title=%5BBeta%5D%20">提交 Issue →</a>
+        </p>
+      </div>
+      <div class="card chan">
+        <h3>提需求 / 想要的效果</h3>
+        <p>想要的分辨率、时长、风格、口型同步、剧情对白等，说出来我们排期。</p>
+        <p style="margin-top:12px">
+          <a class="btn btn-ghost" style="font-size:13px;padding:8px 18px"
+             href="https://github.com/Yang1235744/nanyang-Prism-Max-H2.0/issues/new?labels=enhancement&title=%5BFeature%5D%20">提交需求 →</a>
+        </p>
+      </div>
+      <div class="card">
+        <h3>已知限制（公测期）</h3>
+        <p>· 96px 验证权重只能出构图色块，属预期行为<br>
+           · 1024px / 30 秒视频需 GPU 训练版<br>
+           · 训练脚本要求目录内存在子文件夹</p>
       </div>
     </div>
   </section>
@@ -272,6 +305,8 @@
     <h2>迭代路线</h2>
     <ol class="roadmap">
       <li class="done"><b>v2.0.0a</b> —— 全自研架构首发：Self-DiT / SelfVAE（对称3D VAE）/ ByteTextEncoder；Rectified Flow 训练管线；28 步 EDCISampler 高质量推理；30 秒稳定视频输出；官网棱镜组件。</li>
+      <li class="done"><b>v2.0.2-beta</b> —— <b>公测版</b>：修复 NaN / 花屏；开放 96px 验证权重与完整训练链路；新增 Flux / SDXL 双通道与批量推理加速、口型同步 + 剧情对白自动生成；建立 Issue 反馈通道。</li>
+      <li><b>v2.0.2</b> —— 1024px 正式权重发布（GPU 训练版），公测反馈收敛后转正式版。</li>
       <li><b>v2.0.1</b> —— 引入 LoRA 微调接口，方便在小数据集上适配特定风格。</li>
       <li><b>v2.1</b> —— 8K 超分辨率 Upscaler 模块，对已生成视频做后期清晰化。</li>
       <li><b>v2.2</b> —— 口型同步插件，结合音频自动驱动人物嘴型。</li>
