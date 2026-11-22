@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>nanyang-Prism-Max-H1.7 — 接入图形化大型生成（本地离线运行）</title>
-<meta name="description" content="nanyang-Prism-Max-H1.7：嵌入成熟开源大模型代码的图像/视频生成底座，本地 GPU 即可跑，无需云端 API。与 nanyang-GPT 完全独立。">
+<meta name="description" content="nanyang-Prism-Max-H1.7：嵌入成熟开源大模型代码的图像/视频生成底座，本地 GPU 即可跑，无需云端 API。由 nanyang-GPT 调度调用。">
 <style>
   :root { --bg:#0b0e14; --panel:#121722; --line:#232b3a; --text:#e8edf5; --dim:#93a0b4; --accent:#52d273; --accent2:#4da3ff; --mono:"Cascadia Code","JetBrains Mono",Consolas,monospace; }
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -50,7 +50,7 @@
   td:first-child { color:var(--dim); }
   td:nth-child(2) { color:var(--text); }
 
-  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
   .card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:24px; }
   .card h3 { font-size:17px; margin-bottom:8px; color:var(--accent2); font-family:var(--mono); }
   .card p { color:var(--dim); font-size:14px; }
@@ -85,7 +85,7 @@
       <a href="nanyang-gpt.html">南阳 GPT</a>
       <a href="#engines">引擎</a>
       <a href="#quickstart">快速开始</a>
-      <a href="#independent">独立性</a>
+      <a href="#gpt-integration">GPT 联动</a>
       <a href="#roadmap">路线图</a>
     </nav>
   </div>
@@ -96,9 +96,9 @@
   <div class="hero">
     <div class="badge">v1.7.1 · 本地离线生成</div>
     <h1>nanyang-Prism-Max-H1.7</h1>
-    <p>把成熟的开源大模型代码直接嵌进项目，本地 GPU 就能出真图、出真视频，不再依赖任何外部服务，彻底告别自研底座的色块问题。</p>
+    <p>嵌入成熟开源大模型代码的图像/视频生成底座。由 <strong>nanyang-GPT</strong> 统一调度：<br>GPT 负责对话理解，遇到要画图或生成视频时自动派小弟去干，结果直接带回给用户——全流程在同一个聊天窗口完成。</p>
     <a class="btn btn-primary" href="https://github.com/Yang1235744/nanyang-Prism-Max-H1.7">在 GitHub 上查看</a>
-    <a class="btn btn-ghost" href="#quickstart">快速开始</a>
+    <a class="btn btn-ghost" href="#gpt-integration">看 GPT 如何联动</a>
   </div>
 
   <div class="note-card">
@@ -110,7 +110,7 @@
 
   <section id="engines">
     <h2>引擎一览</h2>
-    <p class="sub">两个引擎，统一 <code>BaseAdapter</code> 接口，按需切换。</p>
+    <p class="sub">两个引擎，统一 <code>BaseAdapter</code> 接口，由 GPT 按需切换调用。</p>
     <table>
       <tr><th>引擎</th><th>模态</th><th>联网需求</th><th>首次下载大小</th><th>说明</th></tr>
       <tr><td><strong>SDXL Turbo</strong></td><td>图片</td><td>❌ 纯本地</td><td>~4 GB</td><td>高清出图，4 步推理，速度极快</td></tr>
@@ -118,9 +118,38 @@
     </table>
   </section>
 
+  <section id="gpt-integration">
+    <h2>与 nanyang-GPT 联动</h2>
+    <p class="sub">GPT 是大脑，Prism 是专干活的小弟。GPT 输出标记 → 自动触发生成 → 结果带回聊天。</p>
+    <div class="grid">
+      <div class="card chan">
+        <span class="pill">Step 1</span>
+        <h3>GPT 识别意图</h3>
+        <p>用户说"帮我画一只红狐"，GPT 在回复中加入生成标记：</p>
+        <pre><span class="cmd">&lt;|gen_image|&gt;</span>
+<span class="cmd">雪地里的红狐，高清摄影，自然光</span>
+<span class="cmd">&lt;|/gen_image|&gt;</span>
+</pre>
+      </div>
+      <div class="card chan">
+        <span class="pill">Step 2</span>
+        <h3>解析并调用引擎</h3>
+        <p><code>GPTChatAdapter</code> 自动识别标记，交给对应引擎执行：</p>
+        <pre><span class="cmd">from prism import GPTChatAdapter</span>
+<span class="cmd">adapter = GPTChatAdapter()</span>
+<span class="cmd">results, reply = adapter.handle_gpt_output(gpt_reply)</span></pre>
+      </div>
+      <div class="card chan">
+        <span class="pill">Step 3</span>
+        <h3>结果带回用户</h3>
+        <p>图片和视频保存在本地缓存目录，用户在聊天中直接看到生成的预览和路径。全程无需跳转任何界面。</p>
+      </div>
+    </div>
+  </section>
+
   <section id="quickstart">
-    <h2>快速开始</h2>
-    <p class="sub">无需任何 API Key，装完依赖，第一次会自动从 HuggingFace 下载权重（只下一次），之后完全离线运行。</p>
+    <h2>独立使用</h2>
+    <p class="sub">不依赖 GPT，也可以直接用命令行生图生视频。</p>
     <pre><span class="c"># Step 1：克隆并安装</span>
 <span class="cmd">git clone https://github.com/Yang1235744/nanyang-Prism-Max-H1.7.git</span>
 <span class="cmd">cd nanyang-Prism-Max-H1.7 && pip install -r requirements.txt</span>
@@ -139,17 +168,21 @@
     </p>
   </section>
 
-  <section id="independent">
-    <h2>与 nanyang-GPT 的关系</h2>
-    <p class="sub">两个独立模型，零耦合，分仓库维护。</p>
-    <table>
-      <tr><th></th><th>nanyang-GPT</th><th>nanyang-Prism-Max-H1.7</th></tr>
-      <tr><td>定位</td><td>对话大模型（纯对话）</td><td>生成大模型（图片 / 视频）</td></tr>
-      <tr><td>规模</td><td>305M 参数 / ~0.6GB</td><td>多引擎本地模型 / ~12GB 首跑后</td></tr>
-      <tr><td>联网依赖</td><td>无</td><td>完全离线，无需任何 API Key</td></tr>
-      <tr><td>仓库</td><td><a href="https://github.com/Yang1235744/nanyang-GPT">nanyang-GPT</a></td><td><a href="https://github.com/Yang1235744/nanyang-Prism-Max-H1.7">nanyang-Prism-Max-H1.7</a></td></tr>
-      <tr><td>依赖关系</td><td colspan="2">零耦合 —— 对话和生成彻底分开，互不干扰</td></tr>
-    </table>
+  <section id="api">
+    <h2>Python API</h2>
+    <p class="sub">直接在你的项目里调用，完全可控。</p>
+    <pre><span class="cmd">from prism import get_engine, GPTChatAdapter</span>
+
+<span class="c"># —— 方式一：直接调引擎 ——</span>
+<span class="cmd">img_client = get_engine('sdxl')</span>
+<span class="cmd">path = img_client.generate_image("一只在雪地里奔跑的红狐")</span>
+
+<span class="cmd">vid_client = get_engine('animatediff')</span>
+<span class="cmd">path = vid_client.generate_video("海浪拍打礁石", duration=30)</span>
+
+<span class="c"># —— 方式二：让 GPT 自动调度 ——</span>
+<span class="cmd">adapter = GPTChatAdapter()</span>
+<span class="cmd">results, user_text = adapter.handle_gpt_output(gpt_reply)</span></pre>
   </section>
 
   <section id="channels">
@@ -175,7 +208,7 @@
     <h2>迭代路线</h2>
     <ol class="roadmap">
       <li class="done"><b>v1.7.0a0</b> —— BaseAdapter 统一框架上线，SDXL / AnimateDiff 双引擎骨架。</li>
-      <li class="done"><b>v1.7.1</b> —— SDXL Turbo 高清出图 + AnimateDiff 30 秒真视频完整落地，完全离线可运行。</li>
+      <li class="done"><b>v1.7.1</b> —— SDXL Turbo 高清出图 + AnimateDiff 30 秒真视频完整落地；<code>GPTChatAdapter</code> 联动接口上线，GPT 可直接调度生成。</li>
       <li><b>v1.7.2</b> —— Flux / SDXL 双通道优化，批量推理加速。</li>
       <li><b>v1.8</b> —— 口型同步，剧情对白自动生成。</li>
       <li><b>v1.9</b> —— 批量生产流水线，一键产出系列内容。</li>
@@ -186,7 +219,7 @@
 
 <footer>
   <div class="wrap">
-    <p>nanyang-Prism-Max-H1.7 · MIT License · 嵌入成熟开源模型，本地真实生成，持续迭代</p>
+    <p>nanyang-Prism-Max-H1.7 · MIT License · 嵌入成熟开源模型，本地真实生成，由 GPT 统一调度</p>
     <p>源码：
       <a href="https://github.com/Yang1235744/nanyang-Prism-Max-H1.7">nanyang-Prism-Max-H1.7</a> ·
       <a href="https://github.com/Yang1235744/nanyang-GPT">nanyang-GPT</a> ·
