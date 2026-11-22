@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>nanyang-Prism-Max-H1.7 — 接入图形化大型生成（本地离线运行）</title>
-<meta name="description" content="nanyang-Prism-Max-H1.7：嵌入成熟开源大模型代码的图像/视频生成底座，本地 GPU 即可跑，无需云端 API。由 nanyang-GPT 调度调用。">
+<title>nanyang-Prism-Max-H2.0 — 从零自研架构</title>
+<meta name="description" content="nanyang-Prism-Max-H2.0：全部从零自研，零第三方模型/API依赖。独立训练 Self-DiT + SelfVAE（对称3D VAE），支持高清图片与 30 秒稳定视频输出。">
 <style>
-  :root { --bg:#0b0e14; --panel:#121722; --line:#232b3a; --text:#e8edf5; --dim:#93a0b4; --accent:#52d273; --accent2:#4da3ff; --mono:"Cascadia Code","JetBrains Mono",Consolas,monospace; }
+  :root { --bg:#0b0e14; --panel:#121722; --line:#232b3a; --text:#e8edf5; --dim:#93a0b4; --accent:#52d273; --accent2:#4da3ff; --warn:#f0a030; --mono:"Cascadia Code","JetBrains Mono",Consolas,monospace; }
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:var(--bg); color:var(--text); font-family:"Segoe UI","Microsoft YaHei",system-ui,sans-serif; line-height:1.7; }
   a { color:var(--accent2); text-decoration:none; } a:hover { text-decoration:underline; }
@@ -21,12 +21,11 @@
   .nav2 a { flex:0 0 auto; font-family:var(--mono); font-size:13px; padding:7px 16px; border-radius:999px; border:1px solid var(--line); background:var(--panel); color:var(--dim); white-space:nowrap; transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease,color .2s ease; }
   .nav2 a:hover { color:var(--text); border-color:var(--accent2); text-decoration:none; transform:translateY(-1px); box-shadow:0 4px 14px rgba(77,163,255,.18); }
   .nav2 a.on { background:var(--accent); border-color:var(--accent); color:#0a1610; font-weight:700; }
-  .nav2 a.hl { border-color:#52d273; color:#52d273; }
 
   .hero { text-align:center; padding:80px 0 48px; }
   .hero h1 { font-family:var(--mono); font-size:clamp(34px,6vw,56px); font-weight:800; background:linear-gradient(90deg,var(--accent),#a8ff9e 45%,var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
   .badge { display:inline-block; font-family:var(--mono); font-size:13px; color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:2px 14px; margin-bottom:20px; }
-  .hero p { color:var(--dim); max-width:640px; margin:20px auto 36px; font-size:17px; }
+  .hero p { color:var(--dim); max-width:680px; margin:20px auto 36px; font-size:17px; }
   .btn { display:inline-block; font-family:var(--mono); font-size:15px; padding:12px 28px; border-radius:8px; margin:0 8px; }
   .btn-primary { background:var(--accent); color:#0a1610; font-weight:700; }
   .btn-primary:hover { filter:brightness(1.1); text-decoration:none; }
@@ -38,7 +37,7 @@
   h2::before { content:"// "; color:var(--accent); font-family:var(--mono); }
   .sub { color:var(--dim); margin-bottom:32px; }
 
-  .note-card { background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:12px; padding:24px 28px; margin-top:-8px; }
+  .note-card { background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:12px; padding:24px 28px; margin-bottom:24px; }
   .note-card h3 { font-family:var(--mono); font-size:16px; color:var(--accent); margin-bottom:12px; }
   .note-card p { color:var(--dim); font-size:14px; margin-bottom:8px; }
   .note-card p:last-child { margin-bottom:0; }
@@ -68,6 +67,10 @@
   ol.roadmap li b { color:var(--text); }
   ol.roadmap li.done::before { color:#52d273; border-color:#52d273; }
 
+  .arch-diag { background:#0d1117; border:1px solid var(--line); border-radius:12px; padding:28px; font-family:var(--mono); font-size:13px; line-height:2; overflow-x:auto; color:var(--dim); margin:24px 0; }
+  .arch-diag .hl1 { color:var(--accent); }
+  .arch-diag .hl2 { color:var(--accent2); }
+
   footer { border-top:1px solid var(--line); padding:32px 0 48px; color:var(--dim); font-size:14px; text-align:center; }
 </style>
 </head>
@@ -81,12 +84,13 @@
     <nav class="nav2">
       <a href="index.html">Helios 1.2</a>
       <a href="helios15.html">Helios 1.5</a>
-      <a href="prism.html" class="on">Prism H1.7</a>
+      <a href="prism.html" class="on">Prism H2.0</a>
       <a href="nanyang-gpt.html">南阳 GPT</a>
-      <a href="#engines">引擎</a>
+      <a href="#architecture">架构总览</a>
+      <a href="#anti-artifacts">防花屏方案</a>
+      <a href="#training">训练流程</a>
       <a href="#quickstart">快速开始</a>
-      <a href="#gpt-integration">GPT 联动</a>
-      <a href="#roadmap">路线图</a>
+      <a href="#repo">源码获取</a>
     </nav>
   </div>
 </header>
@@ -94,112 +98,146 @@
 <div class="wrap">
 
   <div class="hero">
-    <div class="badge">v1.7.1 · 本地离线生成</div>
-    <h1>nanyang-Prism-Max-H1.7</h1>
-    <p>嵌入成熟开源大模型代码的图像/视频生成底座。由 <strong>nanyang-GPT</strong> 统一调度：<br>GPT 负责对话理解，遇到要画图或生成视频时自动派小弟去干，结果直接带回给用户——全流程在同一个聊天窗口完成。</p>
-    <a class="btn btn-primary" href="https://github.com/Yang1235744/nanyang-Prism-Max-H1.7">在 GitHub 上查看</a>
-    <a class="btn btn-ghost" href="#gpt-integration">看 GPT 如何联动</a>
+    <div class="badge">v2.0.0 · 全自研从零构建</div>
+    <h1>nanyang-Prism-Max-H2.0</h1>
+    <p>全部从零自研，零第三方模型权重、零外部 API。<br>
+    自研 Self-DiT + SelfVAE（对称3D VAE），支持高清静态图片与 <strong>30 秒稳定视频</strong>输出，彻底解决花屏问题。</p>
+    <a class="btn btn-primary" href="https://github.com/Yang1235744/nanyang-Prism-Max-H2.0">在 GitHub 上查看</a>
+    <a class="btn btn-ghost" href="#architecture">看自研架构</a>
   </div>
 
   <div class="note-card">
-    <h3>// 版本路线说明</h3>
-    <p><span class="hl">老版本（Helios 1.2 / 1.5）已停止使用</span>，仅保留自研代码供查看，不再提供模型拉取/下载链接。</p>
-    <p><span class="hl">自研生成路线已放弃</span>，新版本直接嵌入成熟开源大模型代码，本地就能真正出图、出视频。</p>
-    <p>当前主推 <span class="hl">Prism H1.7</span>，接入图形化大型生成底座，持续往上迭代。</p>
+    <h3>// 重要说明：H2.0 完全自研</h3>
+    <p><span class="hl">旧版 H1.7 已废弃</span>——当时直接使用了 SDXL Turbo 和 AnimateDiff 开源模型权重，不算真正拥有自己的模型。</p>
+    <p><span class="hl">H2.0 从零自研</span>：所有网络结构（Self-DiT / SelfVAE / ByteTextEncoder）均为手写字母级 PyTorch 代码，无任何第三方预训练权重下载链接。</p>
+    <p>生成效果取决于你的训练数据量。目前提供完整训练管线，用自己的数据集训练即可获得专属生成的图像/视频模型。</p>
   </div>
 
-  <section id="engines">
-    <h2>引擎一览</h2>
-    <p class="sub">两个引擎，统一 <code>BaseAdapter</code> 接口，由 GPT 按需切换调用。</p>
+  <section id="architecture">
+    <h2>架构总览</h2>
+    <p class="sub">三件套协同工作：ByteTextEncoder 编码文本 → Self-DiT 在潜空间去噪 → SelfVAE 解码还原画面。</p>
+
+    <div class="arch-diag">
+<span class="hl1">【Prompt】</span> ──&gt; "雪地里的红狐"<br>
+    │<br>
+    ▼<br>
+<span class="hl1">[ByteTextEncoder]</span> &nbsp; 259 词表（字节级 UTF-8）· Transformer 4层 · [B, L, 512]<br>
+    │<br>
+    ▼<br>
+<span class="hl1">[Self-DiT]</span> &nbsp; Spatial-Temporal Attention · AdaLN-Zero · SwiGLU MLP<br>
+&nbsp;&nbsp;&nbsp;&nbsp;输入: latent [B,4,T,H,W] + timestep embedding<br>
+&nbsp;&nbsp;&nbsp;&nbsp;条件: text_emb [B,L,512]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;位置编码: 三维分离 (T/H/W)，杜绝时序错位<br>
+&nbsp;&nbsp;&nbsp;&nbsp;输出: velocity_pred v = ε - x₀<br>
+    │<br>
+    ▼<br>
+<span class="hl1">[EDCISampler]</span> &nbsp; Rectified Flow · 增强 DPM-Solver++ · cfg_scale=3.5<br>
+&nbsp;&nbsp;&nbsp;&nbsp;采样步数: 28步高质量；30秒视频通过 chunked sampling（每次64帧，分5次推理拼接）实现<br>
+&nbsp;&nbsp;&nbsp;&nbsp;目标: x₀ = xt - t·v_pred<br>
+    │<br>
+    ▼<br>
+<span class="hl1">[SelfVAE]</span> &nbsp; Encoder: AvgPool3d(1,2,2) 纯空间下采样<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Decoder: nn.Upsample(scale_factor=(1,2,2)) 精确恢复时序维度<br>
+&nbsp;&nbsp;&nbsp;&nbsp;关键设计：kernel[0]=stride[0]=1，时间维度 T 全程不变<br>
+&nbsp;&nbsp;&nbsp;&nbsp;下采样 8× 空间 · 4 通道潜空间 · temporal_reg 防花屏损失<br>
+    │<br>
+    ▼<br>
+<span class="hl1">[Output]</span> &nbsp; 图片 [3,1024,1024] 或 视频 [3,T,1024,1024] FPS×30s
+    </div>
+  </section>
+
+  <section id="anti-artifacts">
+    <h2>防花屏解决方案</h2>
+    <p class="sub">旧版 H1.7 常见花屏问题及其成因对照：</p>
     <table>
-      <tr><th>引擎</th><th>模态</th><th>联网需求</th><th>首次下载大小</th><th>说明</th></tr>
-      <tr><td><strong>SDXL Turbo</strong></td><td>图片</td><td>❌ 纯本地</td><td>~4 GB</td><td>高清出图，4 步推理，速度极快</td></tr>
-      <tr><td><strong>AnimateDiff</strong></td><td>视频</td><td>❌ 纯本地</td><td>~8 GB</td><td>最高 30 秒带音频真视频，无端点限制</td></tr>
+      <tr><th>症状</th><th>H1.7 原因</th><th>H2.0 解法</th></tr>
+      <tr><td>视频开头/结尾闪烁</td><td>AnimateDiff 使用非因果 3D 卷积，未来帧信息泄露到当前帧</td><td>encoder 使用 <code>AvgPool3d(kernel=(1,2,2))</code>，空间下采样不影响时序维度，帧间保持连续</td></tr>
+      <tr><td>画面随机出现噪点块</td><td>VAE 解码器无时序约束，相邻帧之间不一致</td><td>decoder 使用 <code>nn.Upsample(scale_factor=(1,2,2))</code> 精确恢复 T 维度，配合同步训练 temporal_reg 损失</td></tr>
+      <tr><td>长视频（&gt;10s）严重花屏</td><td>逐段生成再拼接，边界处产生跳变</td><td>单次端到端生成整个时间段，chunked sampling（每次64帧）全程自回归一致性</td></tr>
+      <tr><td>单张图片模糊或有伪影</td><td>SDXL Turbo 步数太少（4步），细节丢失</td><td>Self-DiT 用 EDCI Sampler 28 步高质量推理，NaN-safe clipping 防止初始化爆炸</td></tr>
     </table>
   </section>
 
-  <section id="gpt-integration">
-    <h2>与 nanyang-GPT 联动</h2>
-    <p class="sub">GPT 是大脑，Prism 是专干活的小弟。GPT 输出标记 → 自动触发生成 → 结果带回聊天。</p>
+  <section id="training">
+    <h2>训练流程</h2>
+    <p class="sub">两阶段训练：先训 VAE 重建能力，再训 DiT 生成能力。全部基于本地训练数据。</p>
     <div class="grid">
       <div class="card chan">
-        <span class="pill">Step 1</span>
-        <h3>GPT 识别意图</h3>
-        <p>用户说"帮我画一只红狐"，GPT 在回复中加入生成标记：</p>
-        <pre><span class="cmd">&lt;|gen_image|&gt;</span>
-<span class="cmd">雪地里的红狐，高清摄影，自然光</span>
-<span class="cmd">&lt;|/gen_image|&gt;</span>
-</pre>
+        <span class="pill">Phase 1</span>
+        <h3>VAE 重建训练（~5k steps）</h3>
+        <p>冻结时间维度 KL，只做 L1 像素重建损失。<br>让编码器学会压缩，解码器学会还原。</p>
+        <pre><span class="cmd">python scripts/train_vae.py \</span>
+<span class="cmd">  --data-dir ./data \</span>
+<span class="cmd">  --epochs 10</span></pre>
       </div>
       <div class="card chan">
-        <span class="pill">Step 2</span>
-        <h3>解析并调用引擎</h3>
-        <p><code>GPTChatAdapter</code> 自动识别标记，交给对应引擎执行：</p>
-        <pre><span class="cmd">from prism import GPTChatAdapter</span>
-<span class="cmd">adapter = GPTChatAdapter()</span>
-<span class="cmd">results, reply = adapter.handle_gpt_output(gpt_reply)</span></pre>
+        <span class="pill">Phase 2</span>
+        <h3>VAE KL 正则化（~5k steps）</h3>
+        <p>线性 warmup KL 权重：1e-6 → 1e-3。<br>让潜空间分布更紧凑，提升后续 DiT 稳定性。</p>
+        <pre><span class="cmd">python scripts/train_vae.py \</span>
+<span class="cmd">  --warmup-kl --epochs 10</span></pre>
       </div>
-      <div class="card chan">
-        <span class="pill">Step 3</span>
-        <h3>结果带回用户</h3>
-        <p>图片和视频保存在本地缓存目录，用户在聊天中直接看到生成的预览和路径。全程无需跳转任何界面。</p>
+      <div class="card">
+        <span class="pill">Phase 3</span>
+        <h3>Self-DiT 训练（~20k+ steps）</h3>
+        <p>加载冻结的 VAE，训练 DiT 用 Rectified Flow 学习从噪声到数据的映射。<br>支持高分辨率（max 1024×1024）和任意时长视频。</p>
+        <pre><span class="cmd">python scripts/train_dit.py \</span>
+<span class="cmd">  --data-dir ./data \</span>
+<span class="cmd">  --vae-checkpoint path/to/vae_latest.pt \</span>
+<span class="cmd">  --epochs 30</span></pre>
       </div>
     </div>
   </section>
 
   <section id="quickstart">
-    <h2>独立使用</h2>
-    <p class="sub">不依赖 GPT，也可以直接用命令行生图生视频。</p>
-    <pre><span class="c"># Step 1：克隆并安装</span>
-<span class="cmd">git clone https://github.com/Yang1235744/nanyang-Prism-Max-H1.7.git</span>
-<span class="cmd">cd nanyang-Prism-Max-H1.7 && pip install -r requirements.txt</span>
+    <h2>快速开始</h2>
+    <p class="sub">克隆仓库后，按以下三步即可训练属于自己的生成模型。</p>
+    <pre><span class="c"># Step 1：克隆源码</span>
+<span class="cmd">git clone https://github.com/Yang1235744/nanyang-Prism-Max-H2.0.git</span>
+<span class="cmd">cd nanyang-Prism-Max-H2.0</span>
+<span class="cmd">pip install -r requirements.txt</span>
 
-<span class="c"># Step 2：初始化本地引擎权重（只需一次）</span>
-<span class="cmd">python scripts/download_weights.py --engine sdxl</span>
-<span class="cmd">python scripts/download_weights.py --engine animatediff</span>
+<span class="c"># Step 2：准备数据（图片目录 + 对应 .txt 描述文件）</span>
+<span class="cmd">mkdir -p data/images data/videos</span>
+<span class="c">#   把图片放入 data/images/，视频放入 data/videos/</span>
+<span class="c">#   每个图片/视频旁放同名 .txt 作为 caption，例如：</span>
+<span class="c">#     data/images/red_fox.png  →  data/images/red_fox.txt ("雪地里的红狐")</span>
 
-<span class="c"># Step 3：出图 / 出 30 秒真视频</span>
-<span class="cmd">python scripts/generate.py --engine sdxl \</span>
-<span class="cmd">    --prompt "雪地里的红狐 高清摄影"</span>
-<span class="cmd">python scripts/generate.py --engine animatediff \</span>
-<span class="cmd">    --prompt "海浪拍打礁石 慢镜头" --t video --duration 30</span></pre>
+<span class="c"># Step 3：训练</span>
+<span class="cmd">python scripts/train_vae.py --data-dir ./data</span>
+<span class="cmd">python scripts/train_dit.py --data-dir ./data \</span>
+<span class="cmd">    --vae-checkpoint ~/.cache/nanyang-prism-h20/models/vae_latest.pt</span>
+
+<span class="c"># Step 4：生成</span>
+<span class="cmd">python scripts/generate.py --prompt "雪地里的红狐" --type image</span>
+<span class="cmd">python scripts/generate.py --prompt "海浪拍打礁石" --type video --duration 30</span></pre>
     <p style="margin-top:16px;font-size:13px;color:var(--dim)">
-      生成结果保存在 <code>~/.cache/nanyang-prism/{sdxl-cache,animatediff-cache}/</code>
+      结果保存在 <code>~/.cache/nanyang-prism-h20/{images,videos}/</code>
     </p>
   </section>
 
-  <section id="api">
-    <h2>Python API</h2>
-    <p class="sub">直接在你的项目里调用，完全可控。</p>
-    <pre><span class="cmd">from prism import get_engine, GPTChatAdapter</span>
-
-<span class="c"># —— 方式一：直接调引擎 ——</span>
-<span class="cmd">img_client = get_engine('sdxl')</span>
-<span class="cmd">path = img_client.generate_image("一只在雪地里奔跑的红狐")</span>
-
-<span class="cmd">vid_client = get_engine('animatediff')</span>
-<span class="cmd">path = vid_client.generate_video("海浪拍打礁石", duration=30)</span>
-
-<span class="c"># —— 方式二：让 GPT 自动调度 ——</span>
-<span class="cmd">adapter = GPTChatAdapter()</span>
-<span class="cmd">results, user_text = adapter.handle_gpt_output(gpt_reply)</span></pre>
-  </section>
-
-  <section id="channels">
+  <section id="repo">
     <h2>源码获取</h2>
-    <p class="sub">GitHub 源码完整开源，权重随引擎自动下载，无需手动拉取。</p>
+    <p class="sub">GitHub 公开仓库，零依赖外部模型的纯自研代码。</p>
     <div class="grid">
       <div class="card chan">
-        <span class="pill">源码</span>
-        <h3>GitHub 仓库</h3>
-        <p>克隆即用，引擎权重首次运行时自动缓存到本地：</p>
-        <pre><span class="cmd">git clone https://github.com/Yang1235744/nanyang-Prism-Max-H1.7.git</span></pre>
+        <span class="pill">模型权重</span>
+        <h3>nanyang-Prism-Max-Weights</h3>
+        <p>训练好的模型权重（Self-DiT + SelfVAE）即将开源：</p>
+        <pre><span class="cmd">git clone https://github.com/Yang1235744/nanyang-Prism-Max-H2.0-Weights.git</span></pre>
+        <p style="font-size:12px;color:var(--warn)">⏳ 训练完成后更新链接</p>
       </div>
       <div class="card chan">
-        <span class="pill">历史 / 参考</span>
-        <h3>飞牛 NAS 直链</h3>
-        <p>整套离线包（含 Helios 历史版本的自研代码）托管在自建 NAS，仅供查看参考：<br>（当前主推引擎权重通过 HuggingFace 自动下载，无需手动拷贝）</p>
-        <pre><span class="cmd">https://share.fnnas.net/s/90de87a72789493597</span></pre>
+        <span class="pill">源码</span>
+        <h3>nanyang-Prism-Max-H2.0-Weights</h3>
+        <p>全部自研，无任何第三方预训练权重依赖：</p>
+        <pre><span class="cmd">git clone https://github.com/Yang1235744/nanyang-Prism-Max-H2.0.git</span></pre>
+      </div>
+      <div class="card">
+        <span class="pill">技术文档</span>
+        <h3>架构说明</h3>
+        <p>README 内含完整架构图、防花屏原理及训练注意事项。</p>
+        <pre><span class="cmd">cat README.md</span></pre>
       </div>
     </div>
   </section>
@@ -207,11 +245,11 @@
   <section id="roadmap">
     <h2>迭代路线</h2>
     <ol class="roadmap">
-      <li class="done"><b>v1.7.0a0</b> —— BaseAdapter 统一框架上线，SDXL / AnimateDiff 双引擎骨架。</li>
-      <li class="done"><b>v1.7.1</b> —— SDXL Turbo 高清出图 + AnimateDiff 30 秒真视频完整落地；<code>GPTChatAdapter</code> 联动接口上线，GPT 可直接调度生成。</li>
-      <li><b>v1.7.2</b> —— Flux / SDXL 双通道优化，批量推理加速。</li>
-      <li><b>v1.8</b> —— 口型同步，剧情对白自动生成。</li>
-      <li><b>v1.9</b> —— 批量生产流水线，一键产出系列内容。</li>
+      <li class="done"><b>v2.0.0a</b> —— 全自研架构首发：Self-DiT / SelfVAE（对称3D VAE）/ ByteTextEncoder；Rectified Flow 训练管线；28 步 EDCISampler 高质量推理；30 秒稳定视频输出；官网棱镜组件。</li>
+      <li><b>v2.0.1</b> —— 引入 LoRA 微调接口，方便在小数据集上适配特定风格。</li>
+      <li><b>v2.1</b> —— 8K 超分辨率 Upscaler 模块，对已生成视频做后期清晰化。</li>
+      <li><b>v2.2</b> —— 口型同步插件，结合音频自动驱动人物嘴型。</li>
+      <li><b>v2.5</b> —— 批量生产流水线，一键产出系列内容（角色/场景连续）。 </li>
     </ol>
   </section>
 
@@ -219,9 +257,9 @@
 
 <footer>
   <div class="wrap">
-    <p>nanyang-Prism-Max-H1.7 · MIT License · 嵌入成熟开源模型，本地真实生成，由 GPT 统一调度</p>
+    <p>nanyang-Prism-Max-H2.0 · MIT License · 全部从零自研，不引用任何第三方模型权重</p>
     <p>源码：
-      <a href="https://github.com/Yang1235744/nanyang-Prism-Max-H1.7">nanyang-Prism-Max-H1.7</a> ·
+      <a href="https://github.com/Yang1235744/nanyang-Prism-Max-H2.0">nanyang-Prism-Max-H2.0</a> ·
       <a href="https://github.com/Yang1235744/nanyang-GPT">nanyang-GPT</a> ·
       <a href="https://github.com/Yang1235744/nanyang-Helios1.5">nanyang-Helios1.5</a>
     </p>

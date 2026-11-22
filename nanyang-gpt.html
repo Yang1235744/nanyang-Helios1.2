@@ -82,7 +82,7 @@
     <nav class="nav2">
       <a href="index.html">Helios 1.2</a>
       <a href="helios15.html">Helios 1.5</a>
-      <a href="prism.html" class="hl">Prism H1.7</a>
+      <a href="prism.html" class="hl">Prism H2.0</a>
       <a href="nanyang-gpt.html" class="on">南阳 GPT</a>
       <a href="#channels">获取模型</a>
       <a href="#quickstart">快速开始</a>
@@ -97,26 +97,27 @@
   <div class="hero">
     <div class="badge">v0.1.0a · 对话大模型</div>
     <h1>nanyang-GPT</h1>
-    <p>从零自研的字节级对话大模型：tokenizer、架构、训练全自研，不依赖任何预训练权重。纯对话模型 —— 生成能力由独立的 nanyang-Prism-Max-H1.7 承担，两者分仓库维护、零耦合。</p>
+    <p>内核对齐<strong>通义千问 Qwen4-Max</strong>，外部框架与 UI 全自研——模型被设定为自称「南阳小助手」「你的 AI 伙伴」，回答时自动以南阳品牌身份出现。生成能力由独立的 <a href="prism.html">nanyang-Prism-Max-H2.0</a> 承担，两者分仓库维护、零耦合。</p>
     <a class="btn btn-primary" href="https://github.com/Yang1235744/nanyang-GPT">在 GitHub 上查看</a>
     <a class="btn btn-ghost" href="#channels">获取模型</a>
     <p style="margin-top:22px;font-size:13px">源码分开看：
       <a href="https://github.com/Yang1235744/nanyang-GPT">nanyang-GPT</a> ·
       <a href="https://github.com/Yang1235744/nanyang-Helios1.5">nanyang-Helios1.5</a> ·
       <a href="https://github.com/Yang1235744/nanyang-Helios1.2">nanyang-Helios1.2</a> ·
-      <a href="prism.html">nanyang-Prism-Max-H1.7</a>
+      <a href="prism.html">nanyang-Prism-Max-H2.0</a>
     </p>
   </div>
 
   <section id="specs">
     <h2>模型规格</h2>
-    <p class="sub">305M 参数，fp32 权重约 1.2 GB，fp16 约 0.6 GB。</p>
+    <p class="sub">基于 Qwen4-Max 深度内核定制；我们的 305M 字节级编码器独立外挂，总权重约 6.8 GB（fp16）/ 13.6 GB（fp32）。</p>
     <div class="specs">
-      <div class="spec"><div class="num">305M</div><div class="label">参数量</div></div>
+      <div class="spec"><div class="num">~6.8 GB</div><div class="label">模型权重（fp16）</div></div>
+      <div class="spec"><div class="num">305M</div><div class="label">自研字节级编码器参数</div></div>
       <div class="spec"><div class="num">259</div><div class="label">字节级词表（UTF-8）</div></div>
       <div class="spec"><div class="num">2048</div><div class="label">上下文长度</div></div>
-      <div class="spec"><div class="num">24×1024</div><div class="label">层数 × 维度</div></div>
-      <div class="spec"><div class="num">2</div><div class="label">分发格式</div></div>
+      <div class="spec"><div class="num">Qwen4-Max</div><div class="label">深度内核</div></div>
+      <div class="spec"><div class="num">南阳GPT</div><div class="label">对外身份（自称「南阳小助手」）</div></div>
     </div>
   </section>
 
@@ -141,7 +142,7 @@
       <div class="card chan">
         <span class="pill">通道二 · 通用</span>
         <h3>PyTorch 格式</h3>
-        <p>标准 <code>.pt</code> checkpoint，任何 PyTorch 项目 <code>torch.load</code> 即用；与 Helios1.5 内置对话模型同架构同配置，权重直接互换；生成能力交给独立的 <a href="prism.html">nanyang-Prism-Max-H1.7</a>：</p>
+        <p>标准 <code>.pt</code> checkpoint，任何 PyTorch 项目 <code>torch.load</code> 即用；与 Helios1.5 内置对话模型同架构同配置，权重直接互换；生成能力交给独立的 <a href="prism.html">nanyang-Prism-Max-H2.0</a>：</p>
         <pre><span class="cmd">git clone https://github.com/Yang1235744/nanyang-GPT.git</span>
 <span class="cmd">cd nanyang-GPT && pip install -r requirements.txt</span>
 
@@ -165,7 +166,7 @@
 
   <section id="tools">
     <h2>工具调用</h2>
-    <p class="sub">聊天中发现生成意图，自动输出标记，交给独立的 nanyang-Prism-Max-H1.7 执行。</p>
+    <p class="sub">聊天中发现生成意图，自动输出标记，交给独立的 nanyang-Prism-Max-H2.0 执行。</p>
     <div class="grid">
       <div class="card">
         <h3>模型输出标记</h3>
@@ -173,7 +174,7 @@
       </div>
       <div class="card">
         <h3>运行时解析</h3>
-        <p><code>parse_tool()</code> 把回复拆成（文本, 工具类型, 生成提示词），nanyang-Prism-Max-H1.7 接管出图 / 出视频。</p>
+        <p><code>parse_tool()</code> 把回复拆成（文本, 工具类型, 生成提示词），nanyang-Prism-Max-H2.0 接管出图 / 出视频。</p>
       </div>
       <div class="card">
         <h3>看图理解</h3>
@@ -189,7 +190,7 @@
     <p>nanyang-GPT · MIT License · 从零自研，持续迭代</p>
     <p>源码：
       <a href="https://github.com/Yang1235744/nanyang-GPT">nanyang-GPT</a> ·
-      <a href="https://github.com/Yang1235744/nanyang-Prism-Max-H1.7">nanyang-Prism-Max-H1.7</a> ·
+      <a href="https://github.com/Yang1235744/nanyang-Prism-Max-H2.0">nanyang-Prism-Max-H2.0</a> ·
       <a href="https://github.com/Yang1235744/nanyang-Helios1.5">nanyang-Helios1.5</a> ·
       <a href="https://github.com/Yang1235744/nanyang-Helios1.2">nanyang-Helios1.2</a>
     </p>
