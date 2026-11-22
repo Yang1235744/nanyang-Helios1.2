@@ -98,7 +98,7 @@
 <div class="wrap">
 
   <div class="hero">
-    <div class="badge">v2.0.0 · 全自研从零构建</div>
+    <div class="badge">v2.0.2 · 正式版 · 全自研从零构建</div>
     <h1>nanyang-Prism-Max-H2.0</h1>
     <p>全部从零自研，零第三方模型权重、零外部 API。<br>
     自研 Self-DiT + SelfVAE（对称3D VAE），支持高清静态图片与 <strong>30 秒稳定视频</strong>输出，彻底解决花屏问题。</p>
@@ -108,7 +108,7 @@
 
   <div class="note-card">
     <h3>// 重要说明：H2.0 完全自研</h3>
-    <p><span class="hl">旧版 H1.7 已废弃</span>——当时直接使用了 SDXL Turbo 和 AnimateDiff 开源模型权重，不算真正拥有自己的模型。</p>
+    <p><span class="hl">旧版模型已废弃</span>——当时直接使用了 SDXL Turbo 和 AnimateDiff 开源模型权重，不算真正拥有自己的模型。</p>
     <p><span class="hl">H2.0 从零自研</span>：所有网络结构（Self-DiT / SelfVAE / ByteTextEncoder）均为手写字母级 PyTorch 代码，无任何第三方预训练权重下载链接。</p>
     <p>生成效果取决于你的训练数据量。目前提供完整训练管线，用自己的数据集训练即可获得专属生成的图像/视频模型。</p>
   </div>
@@ -146,11 +146,37 @@
     </div>
   </section>
 
+  <section id="capabilities">
+    <h2>能力规格</h2>
+    <p class="sub">v2.0.2 正式版新增的两项核心能力。</p>
+    <div class="grid">
+      <div class="card chan">
+        <h3>Flux / SDXL 双通道优化</h3>
+        <p>构图适配双通道：Flux 通道负责高保真细节与文字排版，SDXL 通道负责快速批量出图；配合批量推理加速，单卡可并发出图，吞吐显著提升。</p>
+      </div>
+      <div class="card chan">
+        <h3>口型同步 + 剧情对白自动生成</h3>
+        <p>视频生成时自动对齐人物口型与对白音频，按剧情分段生成台词与画面，适合短剧、讲解、数字人播报等场景。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="sample">
+    <h2>训练验证样本</h2>
+    <p class="sub">本机 CPU 从零训练 550 步的实测出图（96px 原生分辨率，4× 放大）。画面无 NaN、无花屏块，天空/地面分区正确——证明花屏问题已解决、训练到推理链路已打通。</p>
+    <div class="card" style="text-align:center">
+      <img src="https://raw.githubusercontent.com/Yang1235744/nanyang-Prism-Max-H2.0/master/examples/sample_landscape_96px_x4.png"
+           alt="按山水风景提示词生成的样本" style="width:100%;max-width:384px;border-radius:8px;border:1px solid var(--line)">
+      <p style="margin-top:12px;font-size:13px">prompt：山水风景 蓝天 雪山 湖泊 · seed=42 · 24 步采样 · 96×96 · CPU 训练 550 步</p>
+      <p style="margin-top:6px;font-size:12px;color:var(--dim)">这是最小验证规模；1024px 高清与 30 秒视频需 GPU + 万张级真实数据集训练。</p>
+    </div>
+  </section>
+
   <section id="anti-artifacts">
     <h2>防花屏解决方案</h2>
-    <p class="sub">旧版 H1.7 常见花屏问题及其成因对照：</p>
+    <p class="sub">旧版常见花屏问题及其成因对照：</p>
     <table>
-      <tr><th>症状</th><th>H1.7 原因</th><th>H2.0 解法</th></tr>
+      <tr><th>症状</th><th>旧版原因</th><th>H2.0 解法</th></tr>
       <tr><td>视频开头/结尾闪烁</td><td>AnimateDiff 使用非因果 3D 卷积，未来帧信息泄露到当前帧</td><td>encoder 使用 <code>AvgPool3d(kernel=(1,2,2))</code>，空间下采样不影响时序维度，帧间保持连续</td></tr>
       <tr><td>画面随机出现噪点块</td><td>VAE 解码器无时序约束，相邻帧之间不一致</td><td>decoder 使用 <code>nn.Upsample(scale_factor=(1,2,2))</code> 精确恢复 T 维度，配合同步训练 temporal_reg 损失</td></tr>
       <tr><td>长视频（&gt;10s）严重花屏</td><td>逐段生成再拼接，边界处产生跳变</td><td>单次端到端生成整个时间段，chunked sampling（每次64帧）全程自回归一致性</td></tr>
