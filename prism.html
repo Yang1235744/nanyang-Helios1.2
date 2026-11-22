@@ -179,30 +179,56 @@
     </table>
   </section>
 
+  <section id="workflow">
+    <h2>工作流：先收集数据，再本地训模</h2>
+    <p class="sub">MiniMax H3 是训练阶段用的数据源；训好的模型会分发给用户离线运行，无需任何云端依赖。</p>
+    <div class="grid">
+      <div class="card chan">
+        <span class="pill">Step 1 · 数据收集</span>
+        <h3>从 MiniMax H3 拉样本</h3>
+        <p>准备提示词列表，批量生成高质量图文/视频样本写入本地数据集：</p>
+        <pre><span class="cmd">git clone https://github.com/Yang1235744/nanyang-Prism-Max-H1.7.git</span>
+<span class="cmd">cd nanyang-Prism-Max-H1.7 && pip install -r requirements.txt</span>
+<span class="cmd">cp .env.example .env          # 填入训练密钥</span>
+<span class="cmd">python scripts/train_data.py --prompt-list prompts.txt --out-dir data/training</span></pre>
+        <p style="margin-top:8px;font-size:12px;color:#93a0b4">API 密钥仅用于训练数据采集，训完即可撤出内存</p>
+      </div>
+      <div class="card chan">
+        <span class="pill">Step 2 · 本地训练</span>
+        <h3>GPU 训出自己的模型</h3>
+        <p>在本地 GPU 上对采集的数据集进行蒸馏 / 微调，产出可离线运行的权重：</p>
+        <pre><span class="cmd">python scripts/train_model.py \</span>
+<span class="cmd">  --data-dir data/training \</span>
+<span class="cmd">  --epochs 30 --out runs/prism_v1</span></pre>
+        <p style="margin-top:8px;font-size:12px;color:#93a0b4">训练完成后可将权重推送到 GitHub 或 NAS 分发</p>
+      </div>
+      <div class="card chan">
+        <span class="pill">Step 3 · 离线使用</span>
+        <h3>拉取训练成果，本地推理</h3>
+        <p>训练好之后其他用户下载权重，本地 GPU 即可运行，无需连接任何外部服务：</p>
+        <pre><span class="cmd">git pull</span>           <span class="c"># 或从 NAS 下载</span>
+<span class="cmd">python -m prism.infer --ckpt runs/prism_v1/best.pt --prompt "..." --t image</span></pre>
+      </div>
+    </div>
+  </section>
+
   <section id="channels">
-    <h2>获取模型</h2>
-    <p class="sub">拉取源码、配置 API 密钥后即可运行。</p>
+    <h2>源码与数据集</h2>
+    <p class="sub">源码开源，训练后的权重通过飞牛 NAS 分发（待 v1.7.2 本地训练通道跑通后）。</p>
     <div class="grid">
       <div class="card chan">
         <span class="pill">源码</span>
-        <h3>GitHub 拉取</h3>
-        <p>克隆仓库，安装依赖后配置密钥：</p>
+        <h3>GitHub 仓库</h3>
+        <p>克隆仓库，安装依赖后即可开始数据收集：</p>
         <pre><span class="cmd">git clone https://github.com/Yang1235744/nanyang-Prism-Max-H1.7.git</span>
-<span class="cmd">cd nanyang-Prism-Max-H1.7 && pip install -r requirements.txt</span></pre>
+<span class="cmd">pip install -r requirements.txt</span></pre>
       </div>
       <div class="card chan">
-        <span class="pill">API 密钥</span>
-        <h3>MiniMax H3 配置</h3>
-        <p>复制 <code>.env.example</code> 为 <code>.env</code>，填入密钥（也可直接设环境变量）：</p>
-        <pre><span class="cmd">MINIMAX_API_KEY=sk-api-YBHaqZGNzc...IJN35JLkZdHw</span>
-<span class="cmd">MINIMAX_API_BASE=https://minimax.api.easyframe.cn/api/v3</span></pre>
-        <p style="margin-top:8px;font-size:12px;color:#93a0b4">完整密钥与端点见项目内 <code>.env.example</code></p>
-      </div>
-      <div class="card chan">
-        <span class="pill">离线包</span>
+        <span class="pill">已训模型（将来）</span>
         <h3>飞牛 NAS 直链</h3>
-        <p>整套离线包（源码 + 权重）托管在自建 NAS，永久有效、无需注册：</p>
+        <p>训练完成后产出的模型权重将通过此链接分发。当前处于数据收集阶段，权重暂未就绪：</p>
         <pre><span class="cmd">https://share.fnnas.net/s/90de87a72789493597</span></pre>
+        <p style="margin-top:8px;font-size:12px;color:#93a0b4">待 v1.7.2 本地训练通道上线后可直接拉取使用</p>
       </div>
     </div>
   </section>
@@ -212,7 +238,7 @@
     <p class="sub">往下持续加功能，1.5 那套能力逐步搬进来。</p>
     <ol class="roadmap">
       <li class="done"><b>v1.7.0a0</b> —— 多引擎适配器骨架上线，接入图形化大型生成。</li>
-      <li class="done"><b>v1.7.1</b> —— MiniMax H3 真实 API 打通，支持 --api-key / 环境变量；出图/视频全链路验证。</li>
+      <li class="done"><b>v1.7.1</b> —— `train_data.py` 上线；MiniMax H3 API 接入用于训练数据采集。</li>
       <li><b>v1.7.2</b> —— 更多引擎可插拔，双通道稳定运行。</li>
       <li><b>v1.8</b> —— 口型同步，剧情对白生成。</li>
       <li><b>v1.9</b> —— 批量生成，音频同步。</li>
