@@ -57,8 +57,6 @@
   .card.chan { border-color:var(--accent); }
   .card.chan h3 { color:var(--accent); }
   .chan .pill { display:inline-block; font-family:var(--mono); font-size:11px; border:1px solid var(--accent); color:var(--accent); border-radius:999px; padding:0 10px; margin-bottom:10px; }
-  .pill-local { display:inline-block; font-family:var(--mono); font-size:11px; border:1px solid #ffd23d; color:#ffd23d; border-radius:999px; padding:0 10px; margin-bottom:10px; }
-  .pill-api   { display:inline-block; font-family:var(--mono); font-size:11px; border:1px solid var(--accent2); color:var(--accent2); border-radius:999px; padding:0 10px; margin-bottom:10px; }
 
   pre { background:#0d1117; border:1px solid var(--line); border-radius:12px; padding:20px 24px; overflow-x:auto; font-family:var(--mono); font-size:13px; line-height:1.8; }
   pre .c { color:#5b6b82; } pre .cmd { color:#a8ff9e; }
@@ -112,18 +110,17 @@
 
   <section id="engines">
     <h2>引擎一览</h2>
-    <p class="sub">三个引擎，统一 <code>BaseAdapter</code> 接口，按需切换。</p>
+    <p class="sub">两个引擎，统一 <code>BaseAdapter</code> 接口，按需切换。</p>
     <table>
       <tr><th>引擎</th><th>模态</th><th>联网需求</th><th>首次下载大小</th><th>说明</th></tr>
       <tr><td><strong>SDXL Turbo</strong></td><td>图片</td><td>❌ 纯本地</td><td>~4 GB</td><td>高清出图，4 步推理，速度极快</td></tr>
-      <tr><td><strong>AnimateDiff</strong></td><td>视频</td><td>❌ 纯本地</td><td>~8 GB</td><td>15 秒带音频真视频，无端点限制</td></tr>
-      <tr><td><strong>MiniMax H3</strong></td><td>图 + 视频</td><td>✅ 需 API Key</td><td>—</td><td>可选备用通道，需要时配置密钥</td></tr>
+      <tr><td><strong>AnimateDiff</strong></td><td>视频</td><td>❌ 纯本地</td><td>~8 GB</td><td>最高 30 秒带音频真视频，无端点限制</td></tr>
     </table>
   </section>
 
   <section id="quickstart">
     <h2>快速开始</h2>
-    <p class="sub">装完依赖，第一次会自动从 HuggingFace 下载权重（只下一次），之后完全离线运行。</p>
+    <p class="sub">无需任何 API Key，装完依赖，第一次会自动从 HuggingFace 下载权重（只下一次），之后完全离线运行。</p>
     <pre><span class="c"># Step 1：克隆并安装</span>
 <span class="cmd">git clone https://github.com/Yang1235744/nanyang-Prism-Max-H1.7.git</span>
 <span class="cmd">cd nanyang-Prism-Max-H1.7 && pip install -r requirements.txt</span>
@@ -132,30 +129,14 @@
 <span class="cmd">python scripts/download_weights.py --engine sdxl</span>
 <span class="cmd">python scripts/download_weights.py --engine animatediff</span>
 
-<span class="c"># Step 3：出图 / 出视频</span>
+<span class="c"># Step 3：出图 / 出 30 秒真视频</span>
 <span class="cmd">python scripts/generate.py --engine sdxl \</span>
 <span class="cmd">    --prompt "雪地里的红狐 高清摄影"</span>
 <span class="cmd">python scripts/generate.py --engine animatediff \</span>
-<span class="cmd">    --prompt "海浪拍打礁石 慢镜头" --t video --duration 15</span></pre>
+<span class="cmd">    --prompt "海浪拍打礁石 慢镜头" --t video --duration 30</span></pre>
     <p style="margin-top:16px;font-size:13px;color:var(--dim)">
       生成结果保存在 <code>~/.cache/nanyang-prism/{sdxl-cache,animatediff-cache}/</code>
     </p>
-  </section>
-
-  <section id="mini">
-    <h2>MiniMax H3 备用通道（可选）</h2>
-    <p class="sub">如果你持有 MiniMax API Key，可额外启用这条通道作为备用：</p>
-    <pre><span class="c"># 设置环境变量</span>
-<span class="cmd">export MINIMAX_API_KEY="sk-api-xxx"</span>
-<span class="cmd">export MINIMAX_API_BASE="https://minimax.api.easyframe.cn/api/v3"</span>
-
-<span class="c"># 或写入 .env 文件（不提交到 git）</span>
-<span class="cmd">cp .env.example .env</span>
-<span class="cmd">vim .env          # 填入真实密钥后保存</span>
-
-<span class="c"># 使用 mini-max 引擎</span>
-<span class="cmd">python scripts/generate.py --engine minimax-h3 \</span>
-<span class="cmd">    --prompt "赛博朋克城市夜景" --t image</span></pre>
   </section>
 
   <section id="independent">
@@ -165,7 +146,7 @@
       <tr><th></th><th>nanyang-GPT</th><th>nanyang-Prism-Max-H1.7</th></tr>
       <tr><td>定位</td><td>对话大模型（纯对话）</td><td>生成大模型（图片 / 视频）</td></tr>
       <tr><td>规模</td><td>305M 参数 / ~0.6GB</td><td>多引擎本地模型 / ~12GB 首跑后</td></tr>
-      <tr><td>联网依赖</td><td>无</td><td>本地引擎无依赖；MiniMax 备用通道可选</td></tr>
+      <tr><td>联网依赖</td><td>无</td><td>完全离线，无需任何 API Key</td></tr>
       <tr><td>仓库</td><td><a href="https://github.com/Yang1235744/nanyang-GPT">nanyang-GPT</a></td><td><a href="https://github.com/Yang1235744/nanyang-Prism-Max-H1.7">nanyang-Prism-Max-H1.7</a></td></tr>
       <tr><td>依赖关系</td><td colspan="2">零耦合 —— 对话和生成彻底分开，互不干扰</td></tr>
     </table>
@@ -193,8 +174,8 @@
   <section id="roadmap">
     <h2>迭代路线</h2>
     <ol class="roadmap">
-      <li class="done"><b>v1.7.0a0</b> —— BaseAdapter 统一框架上线，SDXL / AnimateDiff / MiniMax 三引擎骨架。</li>
-      <li class="done"><b>v1.7.1</b> —— SDXL Turbo 高清出图 + AnimateDiff 15 秒真视频完整落地，本地可直接运行。</li>
+      <li class="done"><b>v1.7.0a0</b> —— BaseAdapter 统一框架上线，SDXL / AnimateDiff 双引擎骨架。</li>
+      <li class="done"><b>v1.7.1</b> —— SDXL Turbo 高清出图 + AnimateDiff 30 秒真视频完整落地，完全离线可运行。</li>
       <li><b>v1.7.2</b> —— Flux / SDXL 双通道优化，批量推理加速。</li>
       <li><b>v1.8</b> —— 口型同步，剧情对白自动生成。</li>
       <li><b>v1.9</b> —— 批量生产流水线，一键产出系列内容。</li>
