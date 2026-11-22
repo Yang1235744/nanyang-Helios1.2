@@ -18,12 +18,19 @@
   .wrap { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
 
   header { border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(11,14,20,.92); backdrop-filter: blur(8px); z-index: 10; }
-  header .wrap { display: flex; justify-content: space-between; align-items: center; height: 60px; }
+  .top-row { display: flex; justify-content: space-between; align-items: center; height: 52px; }
   .logo { font-family: var(--mono); font-weight: 700; font-size: 18px; }
   .logo em { color: var(--accent); font-style: normal; }
-  nav a { margin-left: 22px; color: var(--dim); font-size: 14px; }
-  nav a:hover { color: var(--text); text-decoration: none; }
-  nav a.new { color: var(--good); }
+  .nav2 { display: flex; gap: 10px; padding: 4px 0 14px; overflow-x: auto; scroll-behavior: smooth;
+    -ms-overflow-style: none; scrollbar-width: none; }
+  .nav2::-webkit-scrollbar { display: none; }
+  .nav2 a { flex: 0 0 auto; font-family: var(--mono); font-size: 13px; padding: 7px 16px;
+    border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--dim);
+    white-space: nowrap; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, color .2s ease; }
+  .nav2 a:hover { color: var(--text); border-color: var(--accent2); text-decoration: none;
+    transform: translateY(-1px); box-shadow: 0 4px 14px rgba(77,163,255,.18); }
+  .nav2 a.on { background: var(--accent); border-color: var(--accent); color: #16100a; font-weight: 700; }
+  .nav2 a.hl { border-color: #52d273; color: #52d273; }
 
   .hero { text-align: center; padding: 96px 0 64px; }
   .badge { display: inline-block; font-family: var(--mono); font-size: 13px; color: var(--good);
@@ -80,18 +87,21 @@
 <body>
 
 <header>
-  <div class="wrap">
+  <div class="wrap top-row">
     <div class="logo">nanyang<em>/</em>Helios<em>1.5</em></div>
-    <nav>
-      <a href="index.html">← Helios1.2</a>
+  </div>
+  <div class="wrap">
+    <nav class="nav2">
+      <a href="index.html">Helios 1.2</a>
+      <a href="helios15.html" class="on">Helios 1.5</a>
+      <a href="prism.html" class="hl">Prism H1.7</a>
+      <a href="nanyang-gpt.html">南阳 GPT</a>
       <a href="#specs">规格</a>
       <a href="#features">特性</a>
       <a href="#arch">架构</a>
       <a href="#download">获取模型</a>
       <a href="#quickstart">快速开始</a>
       <a href="#roadmap">路线图</a>
-      <a href="nanyang-gpt.html" style="color:#52d273">南阳GPT ✦</a>
-      <a href="prism.html" style="color:#52d273">Prism H1.7 ✦</a>
       <a href="https://github.com/Yang1235744/nanyang-Helios1.5">GitHub</a>
     </nav>
   </div>

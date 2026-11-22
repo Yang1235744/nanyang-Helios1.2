@@ -16,13 +16,20 @@
   a:hover { text-decoration: underline; }
   .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
 
-  nav { border-bottom: 1px solid var(--line); }
-  nav .wrap { display: flex; justify-content: space-between; align-items: center; height: 56px; }
+  header { border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(11,14,20,.92); backdrop-filter: blur(8px); z-index: 10; }
+  .top-row { display: flex; justify-content: space-between; align-items: center; height: 52px; }
   .logo { font-family: var(--mono); font-weight: 700; color: var(--text); }
   .logo em { color: var(--accent); font-style: normal; }
-  nav .links a { color: var(--dim); margin-left: 20px; font-size: 14px; }
-  nav .links a:hover { color: var(--text); text-decoration: none; }
-  nav .links a.on { color: var(--accent); }
+  .nav2 { display: flex; gap: 10px; padding: 4px 0 14px; overflow-x: auto; scroll-behavior: smooth;
+    -ms-overflow-style: none; scrollbar-width: none; }
+  .nav2::-webkit-scrollbar { display: none; }
+  .nav2 a { flex: 0 0 auto; font-family: var(--mono); font-size: 13px; padding: 7px 16px;
+    border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--dim);
+    white-space: nowrap; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, color .2s ease; }
+  .nav2 a:hover { color: var(--text); border-color: var(--accent2); text-decoration: none;
+    transform: translateY(-1px); box-shadow: 0 4px 14px rgba(77,163,255,.18); }
+  .nav2 a.on { background: var(--accent); border-color: var(--accent); color: #16100a; font-weight: 700; }
+  .nav2 a.hl { border-color: #52d273; color: #52d273; }
 
   .hero { padding: 64px 0 40px; text-align: center; }
   .tag { font-family: var(--mono); color: var(--accent); font-size: 13px; letter-spacing: 1px; }
@@ -73,17 +80,22 @@
 </style>
 </head>
 <body>
-<nav>
-  <div class="wrap">
+<header>
+  <div class="wrap top-row">
     <a class="logo" href="index.html">nanyang<em>/</em>Helios</a>
-    <div class="links">
-      <a href="index.html">Helios 模型</a>
+  </div>
+  <div class="wrap">
+    <nav class="nav2">
+      <a href="index.html">Helios 1.2</a>
+      <a href="helios15.html">Helios 1.5</a>
+      <a href="prism.html" class="hl">Prism H1.7</a>
+      <a href="nanyang-gpt.html">南阳 GPT</a>
       <a href="chat.html" class="on">Chat 应用</a>
       <a href="index.html#sponsor">赞助</a>
       <a href="https://github.com/Yang1235744/nanyang-Helios1.2" target="_blank" rel="noopener">GitHub</a>
-    </div>
+    </nav>
   </div>
-</nav>
+</header>
 
 <div class="wrap">
   <div class="hero">

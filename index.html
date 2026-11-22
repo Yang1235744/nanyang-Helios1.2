@@ -17,12 +17,20 @@
   a:hover { text-decoration: underline; }
   .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
 
-  header { border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(11,14,20,.9); backdrop-filter: blur(8px); z-index: 10; }
-  header .wrap { display: flex; justify-content: space-between; align-items: center; height: 60px; }
+  header { border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(11,14,20,.92); backdrop-filter: blur(8px); z-index: 10; }
+  .top-row { display: flex; justify-content: space-between; align-items: center; height: 52px; }
   .logo { font-family: var(--mono); font-weight: 700; font-size: 18px; }
   .logo em { color: var(--accent); font-style: normal; }
-  nav a { margin-left: 24px; color: var(--dim); font-size: 14px; }
-  nav a:hover { color: var(--text); text-decoration: none; }
+  .nav2 { display: flex; gap: 10px; padding: 4px 0 14px; overflow-x: auto; scroll-behavior: smooth;
+    -ms-overflow-style: none; scrollbar-width: none; }
+  .nav2::-webkit-scrollbar { display: none; }
+  .nav2 a { flex: 0 0 auto; font-family: var(--mono); font-size: 13px; padding: 7px 16px;
+    border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--dim);
+    white-space: nowrap; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, color .2s ease; }
+  .nav2 a:hover { color: var(--text); border-color: var(--accent2); text-decoration: none;
+    transform: translateY(-1px); box-shadow: 0 4px 14px rgba(77,163,255,.18); }
+  .nav2 a.on { background: var(--accent); border-color: var(--accent); color: #16100a; font-weight: 700; }
+  .nav2 a.hl { border-color: #52d273; color: #52d273; }
 
   .hero { text-align: center; padding: 96px 0 72px; }
   .hero h1 { font-family: var(--mono); font-size: clamp(34px, 6vw, 56px); font-weight: 800;
@@ -62,6 +70,12 @@
   .sponsor-card .txt h3 { font-size: 18px; margin-bottom: 8px; color: var(--accent); font-family: var(--mono); }
   .sponsor-card .txt p { color: var(--dim); font-size: 14px; margin-bottom: 16px; }
 
+  .note-card { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 12px; padding: 24px 28px; }
+  .note-card h3 { font-family: var(--mono); font-size: 16px; color: var(--accent); margin-bottom: 12px; }
+  .note-card p { color: var(--dim); font-size: 14px; margin-bottom: 8px; }
+  .note-card p:last-child { margin-bottom: 0; }
+  .note-card .hl { color: var(--text); }
+
   ol.roadmap { list-style: none; counter-reset: r; }
   ol.roadmap li { counter-increment: r; padding: 14px 0 14px 56px; position: relative; border-bottom: 1px dashed var(--line); color: var(--dim); }
   ol.roadmap li::before { content: "v" counter(r, decimal-leading-zero); position: absolute; left: 0; top: 14px;
@@ -75,19 +89,21 @@
 <body>
 
 <header>
+  <div class="wrap top-row">
+    <div class="logo">nanyang<em>/</em>Helios</div>
+  </div>
   <div class="wrap">
-    <div class="logo">nanyang<em>/</em>Helios<em>1.2</em></div>
-    <nav>
+    <nav class="nav2">
+      <a href="index.html" class="on">Helios 1.2</a>
+      <a href="helios15.html" class="hl">Helios 1.5</a>
+      <a href="prism.html" class="hl">Prism H1.7</a>
+      <a href="nanyang-gpt.html">南阳 GPT</a>
+      <a href="chat.html">Chat 应用</a>
       <a href="#features">特性</a>
       <a href="#arch">架构</a>
       <a href="#quickstart">快速开始</a>
-      <a href="helios15.html" class="new" style="color:#52d273">Helios1.5 ✦</a>
-      <a href="nanyang-gpt.html" style="color:#52d273">南阳GPT ✦</a>
-      <a href="prism.html" style="color:#52d273">Prism H1.7 ✦</a>
-      <a href="chat.html">Chat 应用</a>
       <a href="#roadmap">路线图</a>
       <a href="#sponsor">赞助</a>
-      <a href="https://github.com/Yang1235744/nanyang-Helios1.2">GitHub</a>
     </nav>
   </div>
 </header>
@@ -100,6 +116,13 @@
     <p>从零搭建的统一图片 / 视频生成模型。不依赖任何预训练权重 —— 文本编码器、VAE、Diffusion Transformer 全部自研自训，每一行都可以读、可以改、可以从头复现。</p>
     <a class="btn btn-primary" href="https://github.com/Yang1235744/nanyang-Helios1.2">在 GitHub 上查看</a>
     <a class="btn btn-ghost" href="#quickstart">快速开始</a>
+  </div>
+
+  <div class="note-card" style="margin-top:-8px">
+    <h3>// 版本路线说明</h3>
+    <p><span class="hl">老版本（Helios 1.2 / 1.5）已停止使用</span>，仅保留自研代码供查看，不再提供模型拉取 / 下载链接。</p>
+    <p><span class="hl">自研生成路线已放弃</span>，新版本已切换到全新建设路线。</p>
+    <p>当前主推 <span class="hl">Prism H1.7</span> —— 接入图形化大型生成，持续往上迭代。</p>
   </div>
 
   <section id="features">
@@ -169,21 +192,12 @@
   </section>
 
   <section id="quickstart">
-    <h2>快速开始</h2>
-    <p class="sub">Python 3.10+，装完依赖即可从零训练你自己的第一个 checkpoint。</p>
-    <pre><span class="cmd">git clone https://github.com/Yang1235744/nanyang-Helios1.2.git</span>
-<span class="cmd">cd nanyang-Helios1.2 && pip install -r requirements.txt</span>
-
-<span class="c"># 数据：图片放 data/images，视频放 data/videos（同名 .txt 为 caption，可选）</span>
-<span class="cmd">python -m helios.train --config configs/helios_tiny.yaml --stage vae</span>   <span class="c"># 阶段一：VAE 重建</span>
-<span class="cmd">python -m helios.train --config configs/helios_tiny.yaml --stage dit</span>   <span class="c"># 阶段二：扩散训练</span>
-
-<span class="c"># 生成</span>
-<span class="cmd">python -m helios.sample --ckpt runs/helios_tiny/latest_dit.pt --prompt "一只雪地里的红狐"</span>
-<span class="cmd">python -m helios.sample --ckpt runs/helios_tiny/latest_dit.pt --prompt "海浪拍打礁石" --type video --out out.gif</span>
-
-<span class="c"># 不想自己训：整套离线包（源码 + 权重）自建 NAS 永久直链</span>
-<span class="cmd">https://share.fnnas.net/s/90de87a72789493597</span></pre>
+    <h2>源码查看</h2>
+    <p class="sub">老版本已停止使用，不再提供模型拉取 / 下载，仅保留自研代码供阅读参考。</p>
+    <pre><span class="c"># 自研代码（仅查看，不再提供模型拉取）</span>
+<span class="c">#  架构：统一图文/视频 DiT + 字节级文本编码器 + Rectified Flow</span>
+<span class="c">#  说明：该路线已放弃，新版本见 Prism H1.7</span></pre>
+    <p style="margin-top:14px;font-size:14px;color:var(--dim)">新建设路线已切换到 <a href="prism.html">Prism H1.7 →</a></p>
   </section>
 
   <section id="roadmap">
