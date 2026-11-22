@@ -3,92 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>nanyang-Prism-Max-H1.7 — 接入图形化大型生成</title>
-<meta name="description" content="nanyang-Prism-Max-H1.7：约 25GB 独立生成大模型，接入图形化大型生成底座，图片 / 视频真出片。与 nanyang-GPT 完全无关、独立维护。">
+<title>nanyang-Prism-Max-H1.7 — 接入图形化大型生成（本地离线运行）</title>
+<meta name="description" content="nanyang-Prism-Max-H1.7：嵌入成熟开源大模型代码的图像/视频生成底座，本地 GPU 即可跑，无需云端 API。与 nanyang-GPT 完全独立。">
 <style>
-  :root {
-    --bg: #0b0e14; --panel: #121722; --line: #232b3a;
-    --text: #e8edf5; --dim: #93a0b4; --accent: #52d273; --accent2: #4da3ff;
-    --mono: "Cascadia Code", "JetBrains Mono", Consolas, monospace;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: var(--bg); color: var(--text); font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; line-height: 1.7; }
-  a { color: var(--accent2); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+  :root { --bg:#0b0e14; --panel:#121722; --line:#232b3a; --text:#e8edf5; --dim:#93a0b4; --accent:#52d273; --accent2:#4da3ff; --mono:"Cascadia Code","JetBrains Mono",Consolas,monospace; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:"Segoe UI","Microsoft YaHei",system-ui,sans-serif; line-height:1.7; }
+  a { color:var(--accent2); text-decoration:none; } a:hover { text-decoration:underline; }
+  .wrap { max-width:960px; margin:0 auto; padding:0 24px; }
 
-  header { border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(11,14,20,.92); backdrop-filter: blur(8px); z-index: 10; }
-  .top-row { display: flex; justify-content: space-between; align-items: center; height: 52px; }
-  .logo { font-family: var(--mono); font-weight: 700; font-size: 18px; }
-  .logo em { color: var(--accent); font-style: normal; }
-  .nav2 { display: flex; gap: 10px; padding: 4px 0 14px; overflow-x: auto; scroll-behavior: smooth;
-    -ms-overflow-style: none; scrollbar-width: none; }
-  .nav2::-webkit-scrollbar { display: none; }
-  .nav2 a { flex: 0 0 auto; font-family: var(--mono); font-size: 13px; padding: 7px 16px;
-    border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--dim);
-    white-space: nowrap; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, color .2s ease; }
-  .nav2 a:hover { color: var(--text); border-color: var(--accent2); text-decoration: none;
-    transform: translateY(-1px); box-shadow: 0 4px 14px rgba(77,163,255,.18); }
-  .nav2 a.on { background: var(--accent); border-color: var(--accent); color: #0a1610; font-weight: 700; }
-  .nav2 a.hl { border-color: #52d273; color: #52d273; }
+  header { border-bottom:1px solid var(--line); position:sticky; top:0; background:rgba(11,14,20,.92); backdrop-filter:blur(8px); z-index:10; }
+  .top-row { display:flex; justify-content:space-between; align-items:center; height:52px; }
+  .logo { font-family:var(--mono); font-weight:700; font-size:18px; }
+  .logo em { color:var(--accent); font-style:normal; }
+  .nav2 { display:flex; gap:10px; padding:4px 0 14px; overflow-x:auto; scroll-behavior:smooth; -ms-overflow-style:none; scrollbar-width:none; }
+  .nav2::-webkit-scrollbar { display:none; }
+  .nav2 a { flex:0 0 auto; font-family:var(--mono); font-size:13px; padding:7px 16px; border-radius:999px; border:1px solid var(--line); background:var(--panel); color:var(--dim); white-space:nowrap; transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease,color .2s ease; }
+  .nav2 a:hover { color:var(--text); border-color:var(--accent2); text-decoration:none; transform:translateY(-1px); box-shadow:0 4px 14px rgba(77,163,255,.18); }
+  .nav2 a.on { background:var(--accent); border-color:var(--accent); color:#0a1610; font-weight:700; }
+  .nav2 a.hl { border-color:#52d273; color:#52d273; }
 
-  .hero { text-align: center; padding: 80px 0 64px; }
-  .hero h1 { font-family: var(--mono); font-size: clamp(34px, 6vw, 56px); font-weight: 800;
-    background: linear-gradient(90deg, var(--accent), #a8ff9e 45%, var(--accent2));
-    -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .badge { display: inline-block; font-family: var(--mono); font-size: 13px; color: var(--accent);
-    border: 1px solid var(--accent); border-radius: 999px; padding: 2px 14px; margin-bottom: 20px; }
-  .hero p { color: var(--dim); max-width: 640px; margin: 20px auto 36px; font-size: 17px; }
-  .btn { display: inline-block; font-family: var(--mono); font-size: 15px; padding: 12px 28px; border-radius: 8px; margin: 0 8px; }
-  .btn-primary { background: var(--accent); color: #0a1610; font-weight: 700; }
-  .btn-primary:hover { filter: brightness(1.1); text-decoration: none; }
-  .btn-ghost { border: 1px solid var(--line); color: var(--text); }
-  .btn-ghost:hover { border-color: var(--accent2); text-decoration: none; }
+  .hero { text-align:center; padding:80px 0 48px; }
+  .hero h1 { font-family:var(--mono); font-size:clamp(34px,6vw,56px); font-weight:800; background:linear-gradient(90deg,var(--accent),#a8ff9e 45%,var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .badge { display:inline-block; font-family:var(--mono); font-size:13px; color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:2px 14px; margin-bottom:20px; }
+  .hero p { color:var(--dim); max-width:640px; margin:20px auto 36px; font-size:17px; }
+  .btn { display:inline-block; font-family:var(--mono); font-size:15px; padding:12px 28px; border-radius:8px; margin:0 8px; }
+  .btn-primary { background:var(--accent); color:#0a1610; font-weight:700; }
+  .btn-primary:hover { filter:brightness(1.1); text-decoration:none; }
+  .btn-ghost { border:1px solid var(--line); color:var(--text); }
+  .btn-ghost:hover { border-color:var(--accent2); text-decoration:none; }
 
-  section { padding: 56px 0; }
-  h2 { font-size: 28px; margin-bottom: 8px; }
-  h2::before { content: "// "; color: var(--accent); font-family: var(--mono); }
-  .sub { color: var(--dim); margin-bottom: 36px; }
+  section { padding:48px 0; }
+  h2 { font-size:28px; margin-bottom:8px; }
+  h2::before { content:"// "; color:var(--accent); font-family:var(--mono); }
+  .sub { color:var(--dim); margin-bottom:32px; }
 
-  .specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; }
-  .spec { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px; text-align: center; }
-  .spec .num { font-family: var(--mono); font-size: 26px; font-weight: 700; color: var(--accent); }
-  .spec .label { color: var(--dim); font-size: 13px; margin-top: 4px; }
+  .note-card { background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:12px; padding:24px 28px; margin-top:-8px; }
+  .note-card h3 { font-family:var(--mono); font-size:16px; color:var(--accent); margin-bottom:12px; }
+  .note-card p { color:var(--dim); font-size:14px; margin-bottom:8px; }
+  .note-card p:last-child { margin-bottom:0; }
+  .note-card .hl { color:var(--text); }
 
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
-  .card h3 { font-size: 17px; margin-bottom: 8px; color: var(--accent2); font-family: var(--mono); }
-  .card p { color: var(--dim); font-size: 14px; }
-  .card.chan { border-color: var(--accent); }
-  .card.chan h3 { color: var(--accent); }
-  .chan .pill { display:inline-block; font-family: var(--mono); font-size: 11px; border: 1px solid var(--accent); color: var(--accent); border-radius: 999px; padding: 0 10px; margin-bottom: 10px; }
+  table { width:100%; border-collapse:collapse; }
+  th,td { text-align:left; padding:12px 16px; border-bottom:1px solid var(--line); font-size:14px; }
+  th { color:var(--dim); font-weight:600; }
+  td:first-child { color:var(--dim); }
+  td:nth-child(2) { color:var(--text); }
 
-  pre { background: #0d1117; border: 1px solid var(--line); border-radius: 12px; padding: 20px 24px;
-    overflow-x: auto; font-family: var(--mono); font-size: 14px; line-height: 1.8; }
-  pre .c { color: #5b6b82; } pre .cmd { color: #a8ff9e; }
-  .card pre { padding: 12px 16px; font-size: 13px; }
-  code { font-family: var(--mono); background: #0d1117; border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; font-size: 0.92em; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:24px; }
+  .card h3 { font-size:17px; margin-bottom:8px; color:var(--accent2); font-family:var(--mono); }
+  .card p { color:var(--dim); font-size:14px; }
+  .card.chan { border-color:var(--accent); }
+  .card.chan h3 { color:var(--accent); }
+  .chan .pill { display:inline-block; font-family:var(--mono); font-size:11px; border:1px solid var(--accent); color:var(--accent); border-radius:999px; padding:0 10px; margin-bottom:10px; }
+  .pill-local { display:inline-block; font-family:var(--mono); font-size:11px; border:1px solid #ffd23d; color:#ffd23d; border-radius:999px; padding:0 10px; margin-bottom:10px; }
+  .pill-api   { display:inline-block; font-family:var(--mono); font-size:11px; border:1px solid var(--accent2); color:var(--accent2); border-radius:999px; padding:0 10px; margin-bottom:10px; }
 
-  table { width: 100%; border-collapse: collapse; }
-  th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); font-size: 14px; }
-  th { color: var(--dim); font-weight: 600; }
-  td:first-child { color: var(--dim); }
-  td:nth-child(2) { color: var(--text); }
+  pre { background:#0d1117; border:1px solid var(--line); border-radius:12px; padding:20px 24px; overflow-x:auto; font-family:var(--mono); font-size:13px; line-height:1.8; }
+  pre .c { color:#5b6b82; } pre .cmd { color:#a8ff9e; }
+  code { font-family:var(--mono); background:#0d1117; border:1px solid var(--line); border-radius:4px; padding:1px 6px; font-size:0.92em; }
 
-  ol.roadmap { list-style: none; counter-reset: r; }
-  ol.roadmap li { counter-increment: r; padding: 14px 0 14px 56px; position: relative; border-bottom: 1px dashed var(--line); color: var(--dim); }
-  ol.roadmap li::before { content: "v" counter(r, decimal-leading-zero); position: absolute; left: 0; top: 14px;
-    font-family: var(--mono); font-size: 13px; color: var(--accent); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; background: var(--panel); }
-  ol.roadmap li b { color: var(--text); }
-  ol.roadmap li.done::before { color: #52d273; border-color: #52d273; }
+  ol.roadmap { list-style:none; counter-reset:r; }
+  ol.roadmap li { counter-increment:r; padding:14px 0 14px 56px; position:relative; border-bottom:1px dashed var(--line); color:var(--dim); }
+  ol.roadmap li::before { content:"v" counter(r,decimal-leading-zero); position:absolute; left:0; top:14px; font-family:var(--mono); font-size:13px; color:var(--accent); border:1px solid var(--line); border-radius:6px; padding:2px 8px; background:var(--panel); }
+  ol.roadmap li b { color:var(--text); }
+  ol.roadmap li.done::before { color:#52d273; border-color:#52d273; }
 
-  .note-card { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 12px; padding: 24px 28px; margin-top: 0; }
-  .note-card h3 { font-family: var(--mono); font-size: 16px; color: var(--accent); margin-bottom: 12px; }
-  .note-card p { color: var(--dim); font-size: 14px; margin-bottom: 8px; }
-  .note-card p:last-child { margin-bottom: 0; }
-  .note-card .hl { color: var(--text); }
-
-  footer { border-top: 1px solid var(--line); padding: 32px 0 48px; color: var(--dim); font-size: 14px; text-align: center; }
+  footer { border-top:1px solid var(--line); padding:32px 0 48px; color:var(--dim); font-size:14px; text-align:center; }
 </style>
 </head>
 <body>
@@ -103,9 +85,10 @@
       <a href="helios15.html">Helios 1.5</a>
       <a href="prism.html" class="on">Prism H1.7</a>
       <a href="nanyang-gpt.html">南阳 GPT</a>
-      <a href="#engines">能力</a>
-      <a href="#channels">获取</a>
-      <a href="#roadmap">路线</a>
+      <a href="#engines">引擎</a>
+      <a href="#quickstart">快速开始</a>
+      <a href="#independent">独立性</a>
+      <a href="#roadmap">路线图</a>
     </nav>
   </div>
 </header>
@@ -113,135 +96,108 @@
 <div class="wrap">
 
   <div class="hero">
-    <div class="badge">v1.7.0a0 · 当前主推版本</div>
+    <div class="badge">v1.7.1 · 本地离线生成</div>
     <h1>nanyang-Prism-Max-H1.7</h1>
-    <p>全新独立的大模型，约 25GB 规模，接入图形化大型生成底座 —— 出的是真图、真视频，不再出现自研底座的色块问题。与 nanyang-GPT 零关系、独立维护，后续版本往上持续迭代。</p>
+    <p>把成熟的开源大模型代码直接嵌进项目，本地 GPU 就能出真图、出真视频，不再依赖任何外部服务，彻底告别自研底座的色块问题。</p>
     <a class="btn btn-primary" href="https://github.com/Yang1235744/nanyang-Prism-Max-H1.7">在 GitHub 上查看</a>
-    <a class="btn btn-ghost" href="#channels">获取</a>
+    <a class="btn btn-ghost" href="#quickstart">快速开始</a>
   </div>
 
   <div class="note-card">
     <h3>// 版本路线说明</h3>
-    <p><span class="hl">老版本（Helios 1.2 / 1.5）已停止使用</span>，仅保留自研代码供查看，不再提供模型拉取 / 下载链接。</p>
-    <p><span class="hl">自研生成路线已放弃</span>，新版本已切换到全新建设路线。</p>
-    <p>当前主推 <span class="hl">Prism H1.7</span>，接入图形化大型生成，持续往上迭代。</p>
+    <p><span class="hl">老版本（Helios 1.2 / 1.5）已停止使用</span>，仅保留自研代码供查看，不再提供模型拉取/下载链接。</p>
+    <p><span class="hl">自研生成路线已放弃</span>，新版本直接嵌入成熟开源大模型代码，本地就能真正出图、出视频。</p>
+    <p>当前主推 <span class="hl">Prism H1.7</span>，接入图形化大型生成底座，持续往上迭代。</p>
   </div>
 
-  <section id="specs">
-    <h2>模型规格</h2>
-    <p class="sub">外壳统一叫 Prism Max H1.7，内部图形底座按引擎接入，持续向上迭代。</p>
-    <div class="specs">
-      <div class="spec"><div class="num">~25GB</div><div class="label">模型规模（fp16）</div></div>
-      <div class="spec"><div class="num">3+</div><div class="label">生成引擎（可扩展）</div></div>
-      <div class="spec"><div class="num">15s</div><div class="label">目标视频时长 @12fps</div></div>
-      <div class="spec"><div class="num">2</div><div class="label">模态：图片 / 视频</div></div>
-    </div>
+  <section id="engines">
+    <h2>引擎一览</h2>
+    <p class="sub">三个引擎，统一 <code>BaseAdapter</code> 接口，按需切换。</p>
+    <table>
+      <tr><th>引擎</th><th>模态</th><th>联网需求</th><th>首次下载大小</th><th>说明</th></tr>
+      <tr><td><strong>SDXL Turbo</strong></td><td>图片</td><td>❌ 纯本地</td><td>~4 GB</td><td>高清出图，4 步推理，速度极快</td></tr>
+      <tr><td><strong>AnimateDiff</strong></td><td>视频</td><td>❌ 纯本地</td><td>~8 GB</td><td>15 秒带音频真视频，无端点限制</td></tr>
+      <tr><td><strong>MiniMax H3</strong></td><td>图 + 视频</td><td>✅ 需 API Key</td><td>—</td><td>可选备用通道，需要时配置密钥</td></tr>
+    </table>
   </section>
 
-  <section id="engines">
-    <h2>图形化大型生成</h2>
-    <p class="sub">统一 <code>BaseAdapter</code> 接口，引擎可插拔；当前多路支持，后续按需扩展。</p>
-    <div class="grid">
-      <div class="card chan">
-        <span class="pill">主力通道 · 图像</span>
-        <h3>高清出图</h3>
-        <p>接入图形化大型生成底座，同步生图接口，支持多分辨率。</p>
-        <pre><span class="cmd">--engine image \</span>
-<span class="cmd">  --prompt "雪地里的红狐" --t image</span></pre>
-      </div>
-      <div class="card chan">
-        <span class="pill">主力通道 · 视频</span>
-        <h3>15 秒出片</h3>
-        <p>异步任务轮询，图片 / 视频双模态同步输出，质量优先档位。</p>
-        <pre><span class="cmd">--engine video \</span>
-<span class="cmd">  --prompt "海浪拍打礁石" --t video \</span>
-<span class="cmd">  --duration 15 --fps 12 --audio</span></pre>
-      </div>
-      <div class="card chan">
-        <span class="pill">本地兜底 · 图像</span>
-        <h3>离线生成</h3>
-        <p>不依赖外部 API，CPU offload 可跑，出图兜底通道。</p>
-        <pre><span class="cmd">--engine local \</span>
-<span class="cmd">  --prompt "夜景城市" --t image</span></pre>
-      </div>
-    </div>
+  <section id="quickstart">
+    <h2>快速开始</h2>
+    <p class="sub">装完依赖，第一次会自动从 HuggingFace 下载权重（只下一次），之后完全离线运行。</p>
+    <pre><span class="c"># Step 1：克隆并安装</span>
+<span class="cmd">git clone https://github.com/Yang1235744/nanyang-Prism-Max-H1.7.git</span>
+<span class="cmd">cd nanyang-Prism-Max-H1.7 && pip install -r requirements.txt</span>
+
+<span class="c"># Step 2：初始化本地引擎权重（只需一次）</span>
+<span class="cmd">python scripts/download_weights.py --engine sdxl</span>
+<span class="cmd">python scripts/download_weights.py --engine animatediff</span>
+
+<span class="c"># Step 3：出图 / 出视频</span>
+<span class="cmd">python scripts/generate.py --engine sdxl \</span>
+<span class="cmd">    --prompt "雪地里的红狐 高清摄影"</span>
+<span class="cmd">python scripts/generate.py --engine animatediff \</span>
+<span class="cmd">    --prompt "海浪拍打礁石 慢镜头" --t video --duration 15</span></pre>
+    <p style="margin-top:16px;font-size:13px;color:var(--dim)">
+      生成结果保存在 <code>~/.cache/nanyang-prism/{sdxl-cache,animatediff-cache}/</code>
+    </p>
+  </section>
+
+  <section id="mini">
+    <h2>MiniMax H3 备用通道（可选）</h2>
+    <p class="sub">如果你持有 MiniMax API Key，可额外启用这条通道作为备用：</p>
+    <pre><span class="c"># 设置环境变量</span>
+<span class="cmd">export MINIMAX_API_KEY="sk-api-xxx"</span>
+<span class="cmd">export MINIMAX_API_BASE="https://minimax.api.easyframe.cn/api/v3"</span>
+
+<span class="c"># 或写入 .env 文件（不提交到 git）</span>
+<span class="cmd">cp .env.example .env</span>
+<span class="cmd">vim .env          # 填入真实密钥后保存</span>
+
+<span class="c"># 使用 mini-max 引擎</span>
+<span class="cmd">python scripts/generate.py --engine minimax-h3 \</span>
+<span class="cmd">    --prompt "赛博朋克城市夜景" --t image</span></pre>
   </section>
 
   <section id="independent">
     <h2>与 nanyang-GPT 的关系</h2>
-    <p class="sub">两个独立模型，互不耦合，分仓库维护。</p>
+    <p class="sub">两个独立模型，零耦合，分仓库维护。</p>
     <table>
       <tr><th></th><th>nanyang-GPT</th><th>nanyang-Prism-Max-H1.7</th></tr>
       <tr><td>定位</td><td>对话大模型（纯对话）</td><td>生成大模型（图片 / 视频）</td></tr>
-      <tr><td>规模</td><td>305M 参数 / ~0.6GB</td><td>~25GB / 多引擎底座</td></tr>
+      <tr><td>规模</td><td>305M 参数 / ~0.6GB</td><td>多引擎本地模型 / ~12GB 首跑后</td></tr>
+      <tr><td>联网依赖</td><td>无</td><td>本地引擎无依赖；MiniMax 备用通道可选</td></tr>
       <tr><td>仓库</td><td><a href="https://github.com/Yang1235744/nanyang-GPT">nanyang-GPT</a></td><td><a href="https://github.com/Yang1235744/nanyang-Prism-Max-H1.7">nanyang-Prism-Max-H1.7</a></td></tr>
-      <tr><td>依赖</td><td colspan="2">零依赖、零耦合 —— 对话与生成彻底分开</td></tr>
+      <tr><td>依赖关系</td><td colspan="2">零耦合 —— 对话和生成彻底分开，互不干扰</td></tr>
     </table>
   </section>
 
-  <section id="workflow">
-    <h2>工作流：先收集数据，再本地训模</h2>
-    <p class="sub">MiniMax H3 是训练阶段用的数据源；训好的模型会分发给用户离线运行，无需任何云端依赖。</p>
-    <div class="grid">
-      <div class="card chan">
-        <span class="pill">Step 1 · 数据收集</span>
-        <h3>从 MiniMax H3 拉样本</h3>
-        <p>准备提示词列表，批量生成高质量图文/视频样本写入本地数据集：</p>
-        <pre><span class="cmd">git clone https://github.com/Yang1235744/nanyang-Prism-Max-H1.7.git</span>
-<span class="cmd">cd nanyang-Prism-Max-H1.7 && pip install -r requirements.txt</span>
-<span class="cmd">cp .env.example .env          # 填入训练密钥</span>
-<span class="cmd">python scripts/train_data.py --prompt-list prompts.txt --out-dir data/training</span></pre>
-        <p style="margin-top:8px;font-size:12px;color:#93a0b4">API 密钥仅用于训练数据采集，训完即可撤出内存</p>
-      </div>
-      <div class="card chan">
-        <span class="pill">Step 2 · 本地训练</span>
-        <h3>GPU 训出自己的模型</h3>
-        <p>在本地 GPU 上对采集的数据集进行蒸馏 / 微调，产出可离线运行的权重：</p>
-        <pre><span class="cmd">python scripts/train_model.py \</span>
-<span class="cmd">  --data-dir data/training \</span>
-<span class="cmd">  --epochs 30 --out runs/prism_v1</span></pre>
-        <p style="margin-top:8px;font-size:12px;color:#93a0b4">训练完成后可将权重推送到 GitHub 或 NAS 分发</p>
-      </div>
-      <div class="card chan">
-        <span class="pill">Step 3 · 离线使用</span>
-        <h3>拉取训练成果，本地推理</h3>
-        <p>训练好之后其他用户下载权重，本地 GPU 即可运行，无需连接任何外部服务：</p>
-        <pre><span class="cmd">git pull</span>           <span class="c"># 或从 NAS 下载</span>
-<span class="cmd">python -m prism.infer --ckpt runs/prism_v1/best.pt --prompt "..." --t image</span></pre>
-      </div>
-    </div>
-  </section>
-
   <section id="channels">
-    <h2>源码与数据集</h2>
-    <p class="sub">源码开源，训练后的权重通过飞牛 NAS 分发（待 v1.7.2 本地训练通道跑通后）。</p>
+    <h2>源码获取</h2>
+    <p class="sub">GitHub 源码完整开源，权重随引擎自动下载，无需手动拉取。</p>
     <div class="grid">
       <div class="card chan">
         <span class="pill">源码</span>
         <h3>GitHub 仓库</h3>
-        <p>克隆仓库，安装依赖后即可开始数据收集：</p>
-        <pre><span class="cmd">git clone https://github.com/Yang1235744/nanyang-Prism-Max-H1.7.git</span>
-<span class="cmd">pip install -r requirements.txt</span></pre>
+        <p>克隆即用，引擎权重首次运行时自动缓存到本地：</p>
+        <pre><span class="cmd">git clone https://github.com/Yang1235744/nanyang-Prism-Max-H1.7.git</span></pre>
       </div>
       <div class="card chan">
-        <span class="pill">已训模型（将来）</span>
+        <span class="pill">历史 / 参考</span>
         <h3>飞牛 NAS 直链</h3>
-        <p>训练完成后产出的模型权重将通过此链接分发。当前处于数据收集阶段，权重暂未就绪：</p>
+        <p>整套离线包（含 Helios 历史版本的自研代码）托管在自建 NAS，仅供查看参考：<br>（当前主推引擎权重通过 HuggingFace 自动下载，无需手动拷贝）</p>
         <pre><span class="cmd">https://share.fnnas.net/s/90de87a72789493597</span></pre>
-        <p style="margin-top:8px;font-size:12px;color:#93a0b4">待 v1.7.2 本地训练通道上线后可直接拉取使用</p>
       </div>
     </div>
   </section>
 
   <section id="roadmap">
     <h2>迭代路线</h2>
-    <p class="sub">往下持续加功能，1.5 那套能力逐步搬进来。</p>
     <ol class="roadmap">
-      <li class="done"><b>v1.7.0a0</b> —— 多引擎适配器骨架上线，接入图形化大型生成。</li>
-      <li class="done"><b>v1.7.1</b> —— `train_data.py` 上线；MiniMax H3 API 接入用于训练数据采集。</li>
-      <li><b>v1.7.2</b> —— 更多引擎可插拔，双通道稳定运行。</li>
-      <li><b>v1.8</b> —— 口型同步，剧情对白生成。</li>
-      <li><b>v1.9</b> —— 批量生成，音频同步。</li>
+      <li class="done"><b>v1.7.0a0</b> —— BaseAdapter 统一框架上线，SDXL / AnimateDiff / MiniMax 三引擎骨架。</li>
+      <li class="done"><b>v1.7.1</b> —— SDXL Turbo 高清出图 + AnimateDiff 15 秒真视频完整落地，本地可直接运行。</li>
+      <li><b>v1.7.2</b> —— Flux / SDXL 双通道优化，批量推理加速。</li>
+      <li><b>v1.8</b> —— 口型同步，剧情对白自动生成。</li>
+      <li><b>v1.9</b> —— 批量生产流水线，一键产出系列内容。</li>
     </ol>
   </section>
 
@@ -249,7 +205,7 @@
 
 <footer>
   <div class="wrap">
-    <p>nanyang-Prism-Max-H1.7 · MIT License · 接入图形化大型生成，独立维护，持续迭代</p>
+    <p>nanyang-Prism-Max-H1.7 · MIT License · 嵌入成熟开源模型，本地真实生成，持续迭代</p>
     <p>源码：
       <a href="https://github.com/Yang1235744/nanyang-Prism-Max-H1.7">nanyang-Prism-Max-H1.7</a> ·
       <a href="https://github.com/Yang1235744/nanyang-GPT">nanyang-GPT</a> ·
