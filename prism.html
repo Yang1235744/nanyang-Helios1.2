@@ -181,16 +181,25 @@
 
   <section id="channels">
     <h2>获取模型</h2>
-    <p class="sub">GitHub 源码 + NAS 直链。</p>
+    <p class="sub">拉取源码、配置 API 密钥后即可运行。</p>
     <div class="grid">
       <div class="card chan">
         <span class="pill">源码</span>
-        <h3>GitHub</h3>
-        <p>骨架开源，多引擎适配器框架可拉取：</p>
-        <pre><span class="cmd">git clone https://github.com/Yang1235744/nanyang-Prism-Max-H1.7.git</span></pre>
+        <h3>GitHub 拉取</h3>
+        <p>克隆仓库，安装依赖后配置密钥：</p>
+        <pre><span class="cmd">git clone https://github.com/Yang1235744/nanyang-Prism-Max-H1.7.git</span>
+<span class="cmd">cd nanyang-Prism-Max-H1.7 && pip install -r requirements.txt</span></pre>
       </div>
       <div class="card chan">
-        <span class="pill">权重</span>
+        <span class="pill">API 密钥</span>
+        <h3>MiniMax H3 配置</h3>
+        <p>复制 <code>.env.example</code> 为 <code>.env</code>，填入密钥（也可直接设环境变量）：</p>
+        <pre><span class="cmd">MINIMAX_API_KEY=sk-api-YBHaqZGNzc...IJN35JLkZdHw</span>
+<span class="cmd">MINIMAX_API_BASE=https://minimax.api.easyframe.cn/api/v3</span></pre>
+        <p style="margin-top:8px;font-size:12px;color:#93a0b4">完整密钥与端点见项目内 <code>.env.example</code></p>
+      </div>
+      <div class="card chan">
+        <span class="pill">离线包</span>
         <h3>飞牛 NAS 直链</h3>
         <p>整套离线包（源码 + 权重）托管在自建 NAS，永久有效、无需注册：</p>
         <pre><span class="cmd">https://share.fnnas.net/s/90de87a72789493597</span></pre>
@@ -203,7 +212,7 @@
     <p class="sub">往下持续加功能，1.5 那套能力逐步搬进来。</p>
     <ol class="roadmap">
       <li class="done"><b>v1.7.0a0</b> —— 多引擎适配器骨架上线，接入图形化大型生成。</li>
-      <li><b>v1.7.1</b> —— 真实 API 打通验证，出图 / 出视频全链路跑通。</li>
+      <li class="done"><b>v1.7.1</b> —— MiniMax H3 真实 API 打通，支持 --api-key / 环境变量；出图/视频全链路验证。</li>
       <li><b>v1.7.2</b> —— 更多引擎可插拔，双通道稳定运行。</li>
       <li><b>v1.8</b> —— 口型同步，剧情对白生成。</li>
       <li><b>v1.9</b> —— 批量生成，音频同步。</li>
