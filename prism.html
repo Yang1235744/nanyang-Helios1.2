@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nanyang-Prism-Max-H1.7 — 多引擎图形生成大模型</title>
+<meta name="description" content="nanyang-Prism-Max-H1.7：约 25GB 独立生成大模型，接 MiniMax H3 等第三方引擎做图形底座，图片 / 视频真出片。与 nanyang-GPT 完全无关、独立维护。">
+<style>
+  :root {
+    --bg: #0b0e14; --panel: #121722; --line: #232b3a;
+    --text: #e8edf5; --dim: #93a0b4; --accent: #52d273; --accent2: #4da3ff;
+    --mono: "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; line-height: 1.7; }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+  header { border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(11,14,20,.9); backdrop-filter: blur(8px); z-index: 10; }
+  header .wrap { display: flex; justify-content: space-between; align-items: center; height: 60px; }
+  .logo { font-family: var(--mono); font-weight: 700; font-size: 18px; }
+  .logo em { color: var(--accent); font-style: normal; }
+  nav a { margin-left: 24px; color: var(--dim); font-size: 14px; }
+  nav a:hover { color: var(--text); text-decoration: none; }
+
+  .hero { text-align: center; padding: 96px 0 72px; }
+  .hero h1 { font-family: var(--mono); font-size: clamp(34px, 6vw, 56px); font-weight: 800;
+    background: linear-gradient(90deg, var(--accent), #a8ff9e 45%, var(--accent2));
+    -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .badge { display: inline-block; font-family: var(--mono); font-size: 13px; color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 999px; padding: 2px 14px; margin-bottom: 20px; }
+  .hero p { color: var(--dim); max-width: 640px; margin: 20px auto 36px; font-size: 17px; }
+  .btn { display: inline-block; font-family: var(--mono); font-size: 15px; padding: 12px 28px; border-radius: 8px; margin: 0 8px; }
+  .btn-primary { background: var(--accent); color: #0a1610; font-weight: 700; }
+  .btn-primary:hover { filter: brightness(1.1); text-decoration: none; }
+  .btn-ghost { border: 1px solid var(--line); color: var(--text); }
+  .btn-ghost:hover { border-color: var(--accent2); text-decoration: none; }
+
+  section { padding: 64px 0; }
+  h2 { font-size: 28px; margin-bottom: 8px; }
+  h2::before { content: "// "; color: var(--accent); font-family: var(--mono); }
+  .sub { color: var(--dim); margin-bottom: 36px; }
+
+  .specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; }
+  .spec { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px; text-align: center; }
+  .spec .num { font-family: var(--mono); font-size: 26px; font-weight: 700; color: var(--accent); }
+  .spec .label { color: var(--dim); font-size: 13px; margin-top: 4px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+  .card h3 { font-size: 17px; margin-bottom: 8px; color: var(--accent2); font-family: var(--mono); }
+  .card p { color: var(--dim); font-size: 14px; }
+  .card.chan { border-color: var(--accent); }
+  .card.chan h3 { color: var(--accent); }
+  .chan .pill { display:inline-block; font-family: var(--mono); font-size: 11px; border: 1px solid var(--accent); color: var(--accent); border-radius: 999px; padding: 0 10px; margin-bottom: 10px; }
+
+  pre { background: #0d1117; border: 1px solid var(--line); border-radius: 12px; padding: 20px 24px;
+    overflow-x: auto; font-family: var(--mono); font-size: 14px; line-height: 1.8; }
+  pre .c { color: #5b6b82; } pre .cmd { color: #a8ff9e; }
+  .card pre { padding: 12px 16px; font-size: 13px; }
+  code { font-family: var(--mono); background: #0d1117; border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; font-size: 0.92em; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  th { color: var(--dim); font-weight: 600; }
+  td:first-child { color: var(--dim); }
+  td:nth-child(2) { color: var(--text); }
+
+  ol.roadmap { list-style: none; counter-reset: r; }
+  ol.roadmap li { counter-increment: r; padding: 14px 0 14px 56px; position: relative; border-bottom: 1px dashed var(--line); color: var(--dim); }
+  ol.roadmap li::before { content: "v" counter(r, decimal-leading-zero); position: absolute; left: 0; top: 14px;
+    font-family: var(--mono); font-size: 13px; color: var(--accent); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; background: var(--panel); }
+  ol.roadmap li b { color: var(--text); }
+  ol.roadmap li.done::before { color: #52d273; border-color: #52d273; }
+
+  footer { border-top: 1px solid var(--line); padding: 32px 0 48px; color: var(--dim); font-size: 14px; text-align: center; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="logo">nanyang<em>/</em>Prism<em>Max</em></div>
+    <nav>
+      <a href="index.html">Helios1.2</a>
+      <a href="helios15.html">Helios1.5</a>
+      <a href="nanyang-gpt.html">南阳GPT</a>
+      <a href="#engines">引擎</a>
+      <a href="#channels">获取</a>
+      <a href="https://github.com/Yang1235744/nanyang-Prism-Max-H1.7">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="badge">v1.7.0a0 · 独立生成大模型</div>
+    <h1>nanyang-Prism-Max-H1.7</h1>
+    <p>全新独立的大模型，约 25GB 规模，接入第三方成熟引擎做图形生成底座 —— 出的是真图、真视频，不再有自研底座的色块问题。与 nanyang-GPT 零关系、独立维护，后续版本往上持续迭代。</p>
+    <a class="btn btn-primary" href="https://github.com/Yang1235744/nanyang-Prism-Max-H1.7">在 GitHub 上查看</a>
+    <a class="btn btn-ghost" href="#channels">获取</a>
+  </div>
+
+  <section id="specs">
+    <h2>模型规格</h2>
+    <p class="sub">外壳统一叫 Prism Max H1.7，内部图形底座按引擎接入，持续向上迭代。</p>
+    <div class="specs">
+      <div class="spec"><div class="num">~25GB</div><div class="label">模型规模（fp16）</div></div>
+      <div class="spec"><div class="num">3+</div><div class="label">生成引擎（可扩展）</div></div>
+      <div class="spec"><div class="num">15s</div><div class="label">目标视频时长 @12fps</div></div>
+      <div class="spec"><div class="num">2</div><div class="label">模态：图片 / 视频</div></div>
+    </div>
+  </section>
+
+  <section id="engines">
+    <h2>多引擎图形底座</h2>
+    <p class="sub">统一 <code>BaseAdapter</code> 接口，引擎可插拔；当前接三套，后续按需扩展（Flux、更多视频引擎）。</p>
+    <div class="grid">
+      <div class="card chan">
+        <span class="pill">引擎一 · 主力</span>
+        <h3>MiniMax H3</h3>
+        <p>接 MiniMax H3 做图形底座往上迭代：出图走同步生成接口，出视频走异步任务轮询。图片 / 视频双模态，质量最高的一档。</p>
+        <pre><span class="cmd">--engine minimax-h3 \</span>
+<span class="cmd">  --prompt "雪地里的红狐" --t video \</span>
+<span class="cmd">  --duration 15 --fps 12 --audio</span></pre>
+      </div>
+      <div class="card chan">
+        <span class="pill">引擎二 · 出图</span>
+        <h3>SDXL Turbo</h3>
+        <p>本地 diffusers 通道，turbo 版 4 步 + cfg 1.0，CPU offload 可跑。出图主力兜底，不依赖外部 API。</p>
+        <pre><span class="cmd">--engine sdxl-turbo \</span>
+<span class="cmd">  --prompt "海浪拍打礁石" --t image</span></pre>
+      </div>
+      <div class="card chan">
+        <span class="pill">引擎三 · 出视频</span>
+        <h3>AnimateDiff</h3>
+        <p>motion LoRA + 底模组合，export_to_video 直出 mp4，视频通道的本地兜底。</p>
+        <pre><span class="cmd">--engine animatediff \</span>
+<span class="cmd">  --prompt "海浪拍打礁石" --t video \</span>
+<span class="cmd">  --duration 15 --fps 12</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <section id="independent">
+    <h2>与 nanyang-GPT 的关系</h2>
+    <p class="sub">两个独立模型，互不耦合，分仓库维护。</p>
+    <table>
+      <tr><th></th><th>nanyang-GPT</th><th>nanyang-Prism-Max-H1.7</th></tr>
+      <tr><td>定位</td><td>对话大模型（纯对话）</td><td>生成大模型（图片 / 视频）</td></tr>
+      <tr><td>规模</td><td>305M 参数 / ~0.6GB</td><td>~25GB / 多引擎底座</td></tr>
+      <tr><td>仓库</td><td><a href="https://github.com/Yang1235744/nanyang-GPT">nanyang-GPT</a></td><td><a href="https://github.com/Yang1235744/nanyang-Prism-Max-H1.7">nanyang-Prism-Max-H1.7</a></td></tr>
+      <tr><td>依赖</td><td colspan="2">零依赖、零耦合 —— 对话与生成彻底分开</td></tr>
+    </table>
+  </section>
+
+  <section id="channels">
+    <h2>获取模型</h2>
+    <p class="sub">GitHub 源码，权重走 NAS 直链。</p>
+    <div class="grid">
+      <div class="card chan">
+        <span class="pill">源码</span>
+        <h3>GitHub</h3>
+        <p>骨架已开源，多引擎适配器框架可拉取：</p>
+        <pre><span class="cmd">git clone https://github.com/Yang1235744/nanyang-Prism-Max-H1.7.git</span></pre>
+      </div>
+      <div class="card chan">
+        <span class="pill">权重</span>
+        <h3>飞牛 NAS 直链</h3>
+        <p>整套离线包（源码 + 权重）托管在自建 NAS，永久有效、无需注册：</p>
+        <pre><span class="cmd">https://share.fnnas.net/s/90de87a72789493597</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <section id="roadmap">
+    <h2>迭代路线</h2>
+    <p class="sub">往下持续加功能，1.5 那套能力逐步搬进来。</p>
+    <ol class="roadmap">
+      <li class="done"><b>v1.7.0a0</b> —— 多引擎适配器骨架（MiniMax H3 / SDXL Turbo / AnimateDiff）上线。</li>
+      <li><b>v1.7.1</b> —— MiniMax H3 真实 API 接入，出图 / 出视频真跑通验证。</li>
+      <li><b>v1.7.2</b> —— Flux / SDXL 双通道，更多引擎可插拔。</li>
+      <li><b>v1.8</b> —— 口型同步，剧情对白生成。</li>
+      <li><b>v1.9</b> —— 批量生成，音频同步。</li>
+    </ol>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <p>nanyang-Prism-Max-H1.7 · MIT License · 独立维护，持续迭代</p>
+    <p>源码：
+      <a href="https://github.com/Yang1235744/nanyang-Prism-Max-H1.7">nanyang-Prism-Max-H1.7</a> ·
+      <a href="https://github.com/Yang1235744/nanyang-GPT">nanyang-GPT</a> ·
+      <a href="https://github.com/Yang1235744/nanyang-Helios1.5">nanyang-Helios1.5</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

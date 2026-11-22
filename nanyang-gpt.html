@@ -72,6 +72,7 @@
     <nav>
       <a href="index.html">Helios1.2</a>
       <a href="helios15.html">Helios1.5</a>
+      <a href="prism.html">Prism H1.7</a>
       <a href="#channels">获取模型</a>
       <a href="#quickstart">快速开始</a>
       <a href="https://github.com/Yang1235744/nanyang-GPT">GitHub</a>
@@ -84,13 +85,14 @@
   <div class="hero">
     <div class="badge">v0.1.0a · 对话大模型</div>
     <h1>nanyang-GPT</h1>
-    <p>从零自研的字节级对话大模型：tokenizer、架构、训练全自研，不依赖任何预训练权重。原生工具调用，与 Helios1.5 捆绑 —— 先聊天，再生成。</p>
+    <p>从零自研的字节级对话大模型：tokenizer、架构、训练全自研，不依赖任何预训练权重。纯对话模型 —— 生成能力由独立的 nanyang-Prism-Max-H1.7 承担，两者分仓库维护、零耦合。</p>
     <a class="btn btn-primary" href="https://github.com/Yang1235744/nanyang-GPT">在 GitHub 上查看</a>
     <a class="btn btn-ghost" href="#channels">获取模型</a>
     <p style="margin-top:22px;font-size:13px">源码分开看：
       <a href="https://github.com/Yang1235744/nanyang-GPT">nanyang-GPT</a> ·
       <a href="https://github.com/Yang1235744/nanyang-Helios1.5">nanyang-Helios1.5</a> ·
-      <a href="https://github.com/Yang1235744/nanyang-Helios1.2">nanyang-Helios1.2</a>
+      <a href="https://github.com/Yang1235744/nanyang-Helios1.2">nanyang-Helios1.2</a> ·
+      <a href="prism.html">nanyang-Prism-Max-H1.7</a>
     </p>
   </div>
 
@@ -127,7 +129,7 @@
       <div class="card chan">
         <span class="pill">通道二 · 通用</span>
         <h3>PyTorch 格式</h3>
-        <p>标准 <code>.pt</code> checkpoint，任何 PyTorch 项目 <code>torch.load</code> 即用；与 Helios1.5 内置对话模型同架构同配置，权重直接互换：</p>
+        <p>标准 <code>.pt</code> checkpoint，任何 PyTorch 项目 <code>torch.load</code> 即用；与 Helios1.5 内置对话模型同架构同配置，权重直接互换；生成能力交给独立的 <a href="prism.html">nanyang-Prism-Max-H1.7</a>：</p>
         <pre><span class="cmd">git clone https://github.com/Yang1235744/nanyang-GPT.git</span>
 <span class="cmd">cd nanyang-GPT && pip install -r requirements.txt</span>
 
@@ -151,7 +153,7 @@
 
   <section id="tools">
     <h2>工具调用</h2>
-    <p class="sub">聊天中发现生成意图，自动输出标记，交给 Helios1.5 执行。</p>
+    <p class="sub">聊天中发现生成意图，自动输出标记，交给独立的 nanyang-Prism-Max-H1.7 执行。</p>
     <div class="grid">
       <div class="card">
         <h3>模型输出标记</h3>
@@ -159,7 +161,7 @@
       </div>
       <div class="card">
         <h3>运行时解析</h3>
-        <p><code>parse_tool()</code> 把回复拆成（文本, 工具类型, 生成提示词），Helios1.5 接管出图 / 出视频。</p>
+        <p><code>parse_tool()</code> 把回复拆成（文本, 工具类型, 生成提示词），nanyang-Prism-Max-H1.7 接管出图 / 出视频。</p>
       </div>
       <div class="card">
         <h3>看图理解</h3>
@@ -175,6 +177,7 @@
     <p>nanyang-GPT · MIT License · 从零自研，持续迭代</p>
     <p>源码：
       <a href="https://github.com/Yang1235744/nanyang-GPT">nanyang-GPT</a> ·
+      <a href="https://github.com/Yang1235744/nanyang-Prism-Max-H1.7">nanyang-Prism-Max-H1.7</a> ·
       <a href="https://github.com/Yang1235744/nanyang-Helios1.5">nanyang-Helios1.5</a> ·
       <a href="https://github.com/Yang1235744/nanyang-Helios1.2">nanyang-Helios1.2</a>
     </p>
